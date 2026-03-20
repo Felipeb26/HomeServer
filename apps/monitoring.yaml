@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    repoURL: https://github.com/Felipeb26/HomeServer.git
     targetRevision: HEAD
     path: charts/netdata
   destination:
@@ -25,7 +25,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    repoURL: https://github.com/Felipeb26/HomeServer.git
     targetRevision: HEAD
     path: charts/uptime-kuma
   destination:
