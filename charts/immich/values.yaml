@@ -1,0 +1,36 @@
+image:
+  tag: release
+
+immich:
+  persistence:
+    library:
+      existingClaim: pvc-immich-media
+
+resources:
+  server:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 3Gi
+      cpu: 2000m
+  machineLearning:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 2.75Gi
+      cpu: 2000m
+
+env:
+  TZ: America/Sao_Paulo
+  DB_PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: postgres-secret
+        key: password
+  REDIS_PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: redis-secret
+        key: password

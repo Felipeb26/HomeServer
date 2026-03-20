@@ -1,0 +1,25 @@
+image:
+  repository: nginx
+  tag: alpine
+
+resources:
+  requests:
+    memory: 32Mi
+    cpu: 10m
+  limits:
+    memory: 356Mi
+    cpu: 500m
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: pvc-nginx-config
+
+service:
+  type: LoadBalancer
+  ports:
+    http: 80
+    https: 443
+
+env:
+  TZ: America/Sao_Paulo

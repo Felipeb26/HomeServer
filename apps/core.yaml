@@ -1,0 +1,75 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: core
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/postgres
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: core
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/redis
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: core
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/nginx
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: core
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudflared
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/cloudflared
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: core
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

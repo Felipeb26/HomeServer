@@ -1,0 +1,151 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jellyfin
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/jellyfin
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: radarr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/radarr
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/sonarr
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prowlarr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/prowlarr
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bazarr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/bazarr
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: seerr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/seerr
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: qbittorrent
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/qbittorrent
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fileflows
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SEU_USUARIO/homelab.git
+    targetRevision: HEAD
+    path: charts/fileflows
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

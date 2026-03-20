@@ -1,0 +1,19 @@
+image:
+  repository: ghcr.io/umami-software/umami
+  tag: postgresql-latest
+
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 50m
+  limits:
+    memory: 500Mi
+    cpu: 500m
+
+env:
+  TZ: America/Sao_Paulo
+  DATABASE_URL:
+    valueFrom:
+      secretKeyRef:
+        name: umami-secret
+        key: database-url

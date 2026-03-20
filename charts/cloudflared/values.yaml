@@ -1,0 +1,25 @@
+image:
+  repository: cloudflare/cloudflared
+  tag: latest
+
+resources:
+  requests:
+    memory: 32Mi
+    cpu: 10m
+  limits:
+    memory: 128Mi
+    cpu: 200m
+
+args:
+  - tunnel
+  - --config
+  - /etc/cloudflared/config.yaml
+  - run
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: pvc-cloudflared-config
+
+env:
+  TZ: America/Sao_Paulo

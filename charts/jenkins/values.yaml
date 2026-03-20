@@ -1,0 +1,29 @@
+controller:
+  image:
+    repository: jenkins/jenkins
+    tag: lts
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 3Gi
+      cpu: 2000m
+
+  javaOpts: >-
+    -XX:+UseG1GC
+    -XX:MaxGCPauseMillis=200
+    -XX:+UseStringDeduplication
+    -XX:MaxRAMPercentage=50
+    -XX:InitialRAMPercentage=30
+
+  persistence:
+    enabled: true
+    existingClaim: pvc-jenkins-data
+
+  serviceType: ClusterIP
+
+  env:
+    - name: TZ
+      value: America/Sao_Paulo

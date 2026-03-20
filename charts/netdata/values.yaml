@@ -1,0 +1,31 @@
+image:
+  repository: netdata/netdata
+  tag: latest
+
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m
+  limits:
+    memory: 750Mi
+    cpu: 1000m
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: pvc-netdata-config
+  lib:
+    enabled: true
+    existingClaim: pvc-netdata-lib
+
+env:
+  TZ: America/Sao_Paulo
+
+securityContext:
+  capabilities:
+    add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+
+hostNetwork: true
+hostPID: true

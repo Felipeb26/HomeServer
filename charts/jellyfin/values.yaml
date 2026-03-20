@@ -1,0 +1,25 @@
+image:
+  repository: jellyfin/jellyfin
+  tag: latest
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 1Gi
+    cpu: 2000m
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: pvc-jellyfin-config
+  media:
+    enabled: true
+    existingClaim: pvc-big-storage
+
+env:
+  TZ: America/Sao_Paulo
+
+# GPU passthrough para transcodificação
+runtimeClassName: nvidia

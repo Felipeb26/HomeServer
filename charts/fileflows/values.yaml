@@ -1,0 +1,24 @@
+image:
+  repository: revenz/fileflows
+  tag: latest
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 2Gi
+    cpu: 2000m
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: pvc-fileflows-config
+  media:
+    enabled: true
+    existingClaim: pvc-big-storage
+
+env:
+  TZ: America/Sao_Paulo
+  PUID: "1000"
+  PGID: "1000"

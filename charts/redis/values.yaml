@@ -1,0 +1,21 @@
+architecture: standalone
+
+auth:
+  existingSecret: redis-secret
+
+master:
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  persistence:
+    enabled: true
+    existingClaim: pvc-redis
+
+  extraArgs:
+    - --maxmemory 400mb
+    - --maxmemory-policy allkeys-lru
