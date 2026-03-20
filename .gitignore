@@ -1,0 +1,15 @@
+# segredos
+*.env
+*.secret
+secrets/
+*-secret.yaml
+*-secrets.yaml
+
+# temporários
+*.tmp
+*.bak
+.DS_Store
+
+# kubeconfig
+kubeconfig
+*.kubeconfig
