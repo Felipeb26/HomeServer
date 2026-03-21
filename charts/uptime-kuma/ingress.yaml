@@ -20,6 +20,16 @@ spec:
                 name: uptime-kuma-web
                 port:
                   number: 3001
+    - host: batsworks-elite.tailb70290.ts.net
+      http:
+        paths:
+          - path: /uptime-kuma
+            pathType: Prefix
+            backend:
+              service:
+                name: uptime-kuma-web
+                port:
+                  number: 3001
   tls:
     - hosts:
         - uptime.batsworks.com.br
