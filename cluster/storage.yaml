@@ -1,71 +1,39 @@
-# big_storage — HDD SATA 1.8TB — mídia e downloads
-apiVersion: v1
-kind: PersistentVolume
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  name: pv-big-storage
-  labels:
-    type: local
-    drive: big-storage
-spec:
-  storageClassName: local-path
-  capacity:
-    storage: 1700Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/big_storage
+  name: big-storage
+provisioner: rancher.io/local-path
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+parameters:
+  nodePath: /mnt/big_storage
 ---
-# ext_ssh_bk — HDD SATA 465GB — backup e logs
-apiVersion: v1
-kind: PersistentVolume
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  name: pv-ext-ssh-bk
-  labels:
-    type: local
-    drive: ext-ssh-bk
-spec:
-  storageClassName: local-path
-  capacity:
-    storage: 430Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/ext_ssh_bk
+  name: storage-ext
+provisioner: rancher.io/local-path
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+parameters:
+  nodePath: /mnt/storage_ext
 ---
-# tank-hd — HDD USB 465GB — dados de aplicações
-apiVersion: v1
-kind: PersistentVolume
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  name: pv-tank-hd
-  labels:
-    type: local
-    drive: tank-hd
-spec:
-  storageClassName: local-path
-  capacity:
-    storage: 430Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/tank-hd
+  name: tank-hd
+provisioner: rancher.io/local-path
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+parameters:
+  nodePath: /mnt/tank-hd
 ---
-# storage_ext — SSD USB 465GB — configs e I/O frequente
-apiVersion: v1
-kind: PersistentVolume
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  name: pv-storage-ext
-  labels:
-    type: local
-    drive: storage-ext
-spec:
-  storageClassName: local-path
-  capacity:
-    storage: 430Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/storage_ext
+  name: ext-ssh-bk
+provisioner: rancher.io/local-path
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+parameters:
+  nodePath: /mnt/ext_ssh_bk
