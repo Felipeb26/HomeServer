@@ -1,14 +1,18 @@
 image:
+  registry: docker.io
   repository: louislam/uptime-kuma
-  tag: latest
+  tag: ''
+  flavor: slim-rootless
+  pullPolicy: IfNotPresent
 
-resources:
-  requests:
-    memory: 64Mi
-    cpu: 50m
-  limits:
-    memory: 250Mi
-    cpu: 500m
+controller:
+  enabled: true
+  kind: Deployment
+  replicas: 1
+
+service:
+  enabled: true
+  type: ClusterIP
 
 persistence:
   data:
@@ -16,4 +20,22 @@ persistence:
     existingClaim: pvc-uptime-kuma
 
 env:
-  TZ: America/Sao_Paulo
+  TZ:
+    value: America/Sao_Paulo
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+  hosts:
+    - host: uptime.batsworks.com.br
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - uptime.batsworks.com.br
+      secretName: tls-uptime-kuma
