@@ -23,8 +23,8 @@ spec:
     - host: batsworks-elite.tailb70290.ts.net
       http:
         paths:
-          - path: /uptime
-            pathType: Prefix
+          - path: /uptime(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: uptime-kuma-web
