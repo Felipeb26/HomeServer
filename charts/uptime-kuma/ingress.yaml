@@ -1,15 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: uptime-kuma
+  name: uptime-kuma-cloudflare
   namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/proxy-redirect-from: http://batsworks-elite.tailb70290.ts.net/
-    nginx.ingress.kubernetes.io/proxy-redirect-to: http://batsworks-elite.tailb70290.ts.net/uptime/
 spec:
   ingressClassName: nginx
   rules:
@@ -23,6 +20,23 @@ spec:
                 name: uptime-kuma-web
                 port:
                   number: 3001
+  tls:
+    - hosts:
+        - uptime.batsworks.com.br
+      secretName: tls-uptime-kuma
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: uptime-kuma-tailscale
+  namespace: monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
     - host: batsworks-elite.tailb70290.ts.net
       http:
         paths:
@@ -33,7 +47,3 @@ spec:
                 name: uptime-kuma-web
                 port:
                   number: 3001
-  tls:
-    - hosts:
-        - uptime.batsworks.com.br
-      secretName: tls-uptime-kuma
