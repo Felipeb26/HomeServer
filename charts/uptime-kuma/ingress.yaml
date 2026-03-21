@@ -23,7 +23,7 @@ spec:
     - host: batsworks-elite.tailb70290.ts.net
       http:
         paths:
-          - path: /uptime-kuma
+          - path: /uptime
             pathType: Prefix
             backend:
               service:
