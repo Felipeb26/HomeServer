@@ -1,26 +1,22 @@
-image:
-  registry: docker.io
-  repository: louislam/uptime-kuma
-  tag: ''
-  flavor: slim-rootless
-  pullPolicy: IfNotPresent
+persistentVolumeClaim:
+  create: false
 
-controller:
-  enabled: true
-  kind: Deployment
-  replicas: 1
+extraVolumes:
+  - name: data
+    hostPath:
+      path: /mnt/tank-hd/uptime-kuma
+      type: DirectoryOrCreate
+
+extraVolumeMounts:
+  - name: data
+    mountPath: /app/data
 
 service:
   enabled: true
   type: ClusterIP
 
-persistentVolumeClaim:
-  create: false
-  existingPersistentVolumeClaim: pvc-uptime-kuma
-  mountPath: /app/data
-
 env:
-  TZ:
+  - name: TZ
     value: America/Sao_Paulo
 
 ingress:
