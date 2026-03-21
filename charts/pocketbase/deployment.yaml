@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pocketbase
+  namespace: core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pocketbase
+  template:
+    metadata:
+      labels:
+        app: pocketbase
+    spec:
+      containers:
+        - name: pocketbase
+          image: ghcr.io/muchobien/pocketbase:latest
+          ports:
+            - containerPort: 8090
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 10m
+            limits:
+              memory: 150Mi
+              cpu: 150m
+          volumeMounts:
+            - name: data
+              mountPath: /pb_data
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/tank-hd/pocketbase
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pocketbase
+  namespace: core
+spec:
+  selector:
+    app: pocketbase
+  ports:
+    - port: 8090
+      targetPort: 8090
