@@ -1,39 +1,6 @@
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: big-storage
-provisioner: rancher.io/local-path
-volumeBindingMode: WaitForFirstConsumer
-reclaimPolicy: Retain
-parameters:
-  nodePath: /mnt/big_storage
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: storage-ext
-provisioner: rancher.io/local-path
-volumeBindingMode: WaitForFirstConsumer
-reclaimPolicy: Retain
-parameters:
-  nodePath: /mnt/storage_ext
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: tank-hd
-provisioner: rancher.io/local-path
-volumeBindingMode: WaitForFirstConsumer
-reclaimPolicy: Retain
-parameters:
-  nodePath: /mnt/tank-hd
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: ext-ssh-bk
-provisioner: rancher.io/local-path
-volumeBindingMode: WaitForFirstConsumer
-reclaimPolicy: Retain
-parameters:
-  nodePath: /mnt/ext_ssh_bk
+# storage gerenciado via hostPath direto nos deployments
+# drives disponíveis:
+# /mnt/big_storage  — HDD SATA 1.8TB — mídia e downloads
+# /mnt/storage_ext  — SSD USB 465GB  — configs e I/O frequente
+# /mnt/tank-hd      — HDD USB 465GB  — dados de aplicações
+# /mnt/ext_ssh_bk   — HDD SATA 465GB — backup e logs
