@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      containers:
+        - name: qbittorrent
+          image: linuxserver/qbittorrent:5.1.4-libtorrentv1
+          ports:
+            - containerPort: 8080
+              name: webui
+            - containerPort: 6881
+              name: torrent-tcp
+              protocol: TCP
+            - containerPort: 6881
+              name: torrent-udp
+              protocol: UDP
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: WEBUI_PORT
+              value: "8080"
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 1Gi
+              cpu: 300m
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: config
+          hostPath:
+            path: /mnt/ext_ssh_bk/configs/qbittorrent
+            type: DirectoryOrCreate
+        - name: data
+          hostPath:
+            path: /mnt/big_storage/Torrent
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent
+  namespace: media
+spec:
+  selector:
+    app: qbittorrent
+  ports:
+    - name: webui
+      port: 8080
+      targetPort: 8080
+    - name: torrent-tcp
+      port: 6881
+      targetPort: 6881
+      protocol: TCP
+    - name: torrent-udp
+      port: 6881
+      targetPort: 6881
+      protocol: UDP
