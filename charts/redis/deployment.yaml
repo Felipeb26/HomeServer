@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-shared
+  namespace: core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-shared
+  template:
+    metadata:
+      labels:
+        app: redis-shared
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          command:
+            - redis-server
+            - --maxmemory
+            - 400mb
+            - --maxmemory-policy
+            - allkeys-lru
+            - --appendonly
+            - "yes"
+            - --requirepass
+            - $(REDIS_PASSWORD)
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/ext_ssh_bk/redis_data
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-shared
+  namespace: core
+spec:
+  selector:
+    app: redis-shared
+  ports:
+    - port: 6379
+      targetPort: 6379
