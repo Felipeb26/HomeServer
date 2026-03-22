@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fileflows
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fileflows
+  template:
+    metadata:
+      labels:
+        app: fileflows
+    spec:
+      securityContext:
+        supplementalGroups:
+          - 992
+          - 44
+      containers:
+        - name: fileflows
+          image: revenz/fileflows:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TempPathHost
+              value: /mnt/big_storage
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 2Gi
+              cpu: 2000m
+          volumeMounts:
+            - name: data
+              mountPath: /app/Data
+            - name: logs
+              mountPath: /app/Logs
+            - name: common
+              mountPath: /app/common
+            - name: media
+              mountPath: /media
+            - name: temp
+              mountPath: /temp
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+            - name: dri
+              mountPath: /dev/dri
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/big_storage/fileflow/data
+            type: DirectoryOrCreate
+        - name: logs
+          hostPath:
+            path: /mnt/big_storage/fileflow/logs
+            type: DirectoryOrCreate
+        - name: common
+          hostPath:
+            path: /mnt/big_storage/fileflow/common
+            type: DirectoryOrCreate
+        - name: media
+          hostPath:
+            path: /mnt/big_storage/Torrent
+            type: DirectoryOrCreate
+        - name: temp
+          hostPath:
+            path: /mnt/big_storage
+            type: DirectoryOrCreate
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
+        - name: dri
+          hostPath:
+            path: /dev/dri
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fileflows
+  namespace: media
+spec:
+  selector:
+    app: fileflows
+  ports:
+    - port: 5000
+      targetPort: 5000
