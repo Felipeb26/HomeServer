@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rclone
+  namespace: core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rclone
+  template:
+    metadata:
+      labels:
+        app: rclone
+    spec:
+      containers:
+        - name: rclone
+          image: rclone/rclone:latest
+          ports:
+            - containerPort: 5572
+          args:
+            - rcd
+            - --rc-web-gui
+            - --rc-web-gui-force-update
+            - --rc-web-gui-no-open-browser
+            - --rc-addr
+            - :5572
+            - --rc-no-auth
+            - --log-file=/logs/rclone.log
+            - --log-level
+            - INFO
+            - --transfers
+            - "6"
+            - --checkers
+            - "12"
+            - --buffer-size
+            - 64M
+            - --low-level-retries
+            - "10"
+            - --retries
+            - "5"
+            - --retries-sleep
+            - 10s
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 1200Mi
+              cpu: 1000m
+          volumeMounts:
+            - name: config
+              mountPath: /config/rclone
+            - name: logs
+              mountPath: /logs
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: config
+          hostPath:
+            path: /mnt/tank-hd/rclone/config
+            type: DirectoryOrCreate
+        - name: logs
+          hostPath:
+            path: /mnt/tank-hd/rclone/logs
+            type: DirectoryOrCreate
+        - name: data
+          hostPath:
+            path: /mnt/big_storage/immich/library
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rclone
+  namespace: core
+spec:
+  selector:
+    app: rclone
+  ports:
+    - port: 5572
+      targetPort: 5572
