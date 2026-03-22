@@ -61,12 +61,9 @@ spec:
         - name: transcode
           emptyDir:
             medium: Memory
-        - name: renderD128
+        - name: dri
           hostPath:
-            path: /dev/dri/renderD128
-        - name: card0
-          hostPath:
-            path: /dev/dri/card0
+            path: /dev/dri
 ---
 apiVersion: v1
 kind: Service
