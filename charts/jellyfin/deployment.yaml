@@ -56,7 +56,7 @@ spec:
             type: DirectoryOrCreate
         - name: data
           hostPath:
-            path: /mnt/big_storage
+            path: /mnt/big_storage/Torrent
             type: DirectoryOrCreate
         - name: transcode
           emptyDir:
