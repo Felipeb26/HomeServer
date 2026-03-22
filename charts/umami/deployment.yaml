@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umami
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: umami
+  template:
+    metadata:
+      labels:
+        app: umami
+    spec:
+      containers:
+        - name: umami
+          image: ghcr.io/umami-software/umami:postgresql-latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: DATABASE_URL
+              value: postgresql://postgres:$(POSTGRES_PASSWORD)@postgres-shared.core.svc.cluster.local:5432/umami
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 500Mi
+              cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umami
+  namespace: monitoring
+spec:
+  selector:
+    app: umami
+  ports:
+    - port: 3000
+      targetPort: 3000
