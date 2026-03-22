@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+        - name: jellyfin
+          image: linuxserver/jellyfin:latest
+          ports:
+            - containerPort: 8096
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: JELLYFIN_FFmpeg__HardwareAccelerationType
+              value: vaapi
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 1Gi
+              cpu: 2000m
+          securityContext:
+            supplementalGroups:
+              - 992
+              - 44
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+            - name: transcode
+              mountPath: /transcode
+            - name: renderD128
+              mountPath: /dev/dri/renderD128
+            - name: card0
+              mountPath: /dev/dri/card0
+      volumes:
+        - name: config
+          hostPath:
+            path: /mnt/ext_ssh_bk/configs/jellyfin
+            type: DirectoryOrCreate
+        - name: data
+          hostPath:
+            path: /mnt/big_storage
+            type: DirectoryOrCreate
+        - name: transcode
+          emptyDir:
+            medium: Memory
+        - name: renderD128
+          hostPath:
+            path: /dev/dri/renderD128
+        - name: card0
+          hostPath:
+            path: /dev/dri/card0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  selector:
+    app: jellyfin
+  ports:
+    - port: 8096
+      targetPort: 8096
