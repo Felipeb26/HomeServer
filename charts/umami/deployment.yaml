@@ -21,13 +21,13 @@ spec:
           env:
             - name: TZ
               value: America/Sao_Paulo
-            - name: DATABASE_URL
-              value: postgresql://postgres:$(POSTGRES_PASSWORD)@postgres-shared.core.svc.cluster.local:5432/umami
-            - name: POSTGRES_PASSWORD
+            - name: DB_PASS
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: password
+            - name: DATABASE_URL
+              value: "postgresql://postgres:$(DB_PASS)@postgres-shared.core.svc.cluster.local:5432/umami"
           resources:
             requests:
               memory: 128Mi
