@@ -13,6 +13,10 @@ spec:
       labels:
         app: jellyfin
     spec:
+      securityContext:
+        supplementalGroups:
+          - 992
+          - 44
       containers:
         - name: jellyfin
           image: linuxserver/jellyfin:latest
@@ -34,10 +38,6 @@ spec:
             limits:
               memory: 1Gi
               cpu: 2000m
-          securityContext:
-            supplementalGroups:
-              - 992
-              - 44
           volumeMounts:
             - name: config
               mountPath: /config
