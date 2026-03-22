@@ -22,8 +22,25 @@ spec:
           image: tensorchord/pgvecto-rs:pg14-v0.2.0
           ports:
             - containerPort: 5432
-          command:
-            - postgres
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_INITDB_ARGS
+              value: --auth-host=scram-sha-256 --data-checksums
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: scram-sha-256
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          args:
             - -c
             - shared_preload_libraries=vectors.so
             - -c
@@ -74,24 +91,6 @@ spec:
             - log_min_duration_statement=1000
             - -c
             - log_temp_files=0
-          env:
-            - name: TZ
-              value: America/Sao_Paulo
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: password
-            - name: POSTGRES_DB
-              value: postgres
-            - name: POSTGRES_INITDB_ARGS
-              value: --auth-host=scram-sha-256 --data-checksums
-            - name: POSTGRES_HOST_AUTH_METHOD
-              value: scram-sha-256
-            - name: PGDATA
-              value: /var/lib/postgresql/data/pgdata
           resources:
             requests:
               memory: 256Mi
