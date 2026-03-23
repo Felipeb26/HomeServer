@@ -35,6 +35,10 @@ spec:
               value: postgres-shared.core.svc.cluster.local
             - name: AUTHENTIK_POSTGRESQL__USER
               value: postgres
+            - name: AUTHENTIK_ERROR_REPORTING__ENABLED
+              value: "false"
+            - name: AUTHENTIK_DOMAIN
+              value: authentik.batsworks.com.br
             - name: AUTHENTIK_POSTGRESQL__NAME
               value: authentik
             - name: AUTHENTIK_POSTGRESQL__PASSWORD
