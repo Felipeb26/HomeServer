@@ -46,21 +46,21 @@ spec:
             - -c
             - search_path='',public,vectors,drizzle
             - -c
-            - max_connections=300
+            - max_connections=100
             - -c
-            - shared_buffers=2GB
+            - shared_buffers=256MB
             - -c
-            - effective_cache_size=6GB
+            - effective_cache_size=1GB
             - -c
-            - maintenance_work_mem=512MB
+            - maintenance_work_mem=64MB
             - -c
-            - work_mem=16MB
+            - work_mem=4MB
             - -c
-            - wal_buffers=16MB
+            - wal_buffers=8MB
             - -c
-            - min_wal_size=1GB
+            - min_wal_size=256MB
             - -c
-            - max_wal_size=4GB
+            - max_wal_size=1GB
             - -c
             - checkpoint_completion_target=0.9
             - -c
@@ -96,8 +96,8 @@ spec:
               memory: 256Mi
               cpu: 100m
             limits:
-              memory: 2Gi
-              cpu: 1000m
+              memory: 512Mi
+              cpu: 500m
           readinessProbe:
             exec:
               command:
