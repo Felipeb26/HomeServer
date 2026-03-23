@@ -67,5 +67,3 @@ spec:
         - name: card-0
           hostPath:
             path: /dev/dri/card
-
-      targetPort: 8096
