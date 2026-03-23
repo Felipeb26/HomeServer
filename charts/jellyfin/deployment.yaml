@@ -67,3 +67,16 @@ spec:
         - name: card-0
           hostPath:
             path: /dev/dri/card
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  selector:
+    app: jellyfin
+  ports:
+    - port: 8096
+      targetPort: 8096
