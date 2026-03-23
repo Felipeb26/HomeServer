@@ -27,3 +27,17 @@ spec:
     - hosts:
         - jellyfin.batsworks.com.br
       secretName: tls-jellyfin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  type: NodePort
+  selector:
+    app: jellyfin
+  ports:
+    - port: 8096
+      targetPort: 8096
+      nodePort: 30096
