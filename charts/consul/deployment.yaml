@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consul
+  namespace: core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consul
+  template:
+    metadata:
+      labels:
+        app: consul
+    spec:
+      containers:
+        - name: consul
+          image: hashicorp/consul:1.15
+          ports:
+            - containerPort: 8500
+              name: http
+            - containerPort: 8600
+              name: dns
+              protocol: UDP
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: GOGC
+              value: "80"
+            - name: CONSUL_LOCAL_CONFIG
+              value: |
+                {
+                  "datacenter": "dc1",
+                  "data_dir": "/consul/data",
+                  "log_level": "INFO",
+                  "node_name": "server-prod",
+                  "server": true,
+                  "bootstrap_expect": 1,
+                  "ui_config": { "enabled": true },
+                  "client_addr": "0.0.0.0",
+                  "performance": { "raft_multiplier": 3 },
+                  "acl": {
+                    "enabled": true,
+                    "default_policy": "deny",
+                    "enable_token_persistence": true,
+                    "tokens": {
+                      "initial_management": "39a09eab-008a-ffe9-d470-e28af11cf6c9"
+                    }
+                  }
+                }
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 500Mi
+              cpu: 500m
+          volumeMounts:
+            - name: data
+              mountPath: /consul/data
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/tank-hd/consul
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul
+  namespace: core
+spec:
+  selector:
+    app: consul
+  ports:
+    - name: http
+      port: 8500
+      targetPort: 8500
+    - name: dns
+      port: 8600
+      targetPort: 8600
+      protocol: UDP
