@@ -43,9 +43,7 @@ spec:
                     "enabled": true,
                     "default_policy": "deny",
                     "enable_token_persistence": true,
-                    "tokens": {
-                      "initial_management": "39a09eab-008a-ffe9-d470-e28af11cf6c9"
-                    }
+                    "tokens": {}
                   }
                 }
           resources:
