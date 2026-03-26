@@ -47,46 +47,55 @@ spec:
             - search_path='',public,vectors,drizzle
             - -c
             - max_connections=100
+            # memória global
             - -c
-            - shared_buffers=256MB
+            - shared_buffers=512MB
             - -c
-            - effective_cache_size=1GB
+            - effective_cache_size=2GB
+            # memória por conexão (crítico)
             - -c
-            - maintenance_work_mem=64MB
+            - work_mem=2MB
             - -c
-            - work_mem=4MB
+            - maintenance_work_mem=128MB
+            # WAL / IO
             - -c
-            - wal_buffers=8MB
+            - wal_buffers=16MB
             - -c
-            - min_wal_size=256MB
+            - min_wal_size=512MB
             - -c
-            - max_wal_size=1GB
+            - max_wal_size=2GB
+            # tuning geral
             - -c
             - checkpoint_completion_target=0.9
             - -c
             - random_page_cost=1.1
+            # timeouts
             - -c
             - idle_in_transaction_session_timeout=30000
             - -c
             - statement_timeout=60000
+            # TCP
             - -c
             - tcp_keepalives_idle=60
             - -c
             - tcp_keepalives_interval=10
             - -c
             - tcp_keepalives_count=5
+            # paralelismo
             - -c
             - max_parallel_workers_per_gather=2
             - -c
             - max_parallel_workers=4
             - -c
             - max_worker_processes=4
+            # autovacuum
             - -c
             - autovacuum_vacuum_scale_factor=0.05
             - -c
             - autovacuum_analyze_scale_factor=0.02
             - -c
             - autovacuum_vacuum_cost_delay=10ms
+            # logs
             - -c
             - log_min_duration_statement=1000
             - -c
