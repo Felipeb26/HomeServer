@@ -44,6 +44,7 @@ spec:
                     "default_policy": "deny",
                     "enable_token_persistence": true,
                     "tokens": {
+                      "initial_management" = "2f85162c-2d84-b4ea-4332-386d6e50c2fb"
                       "agent": "2f85162c-2d84-b4ea-4332-386d6e50c2fb"
                     }
                   }
