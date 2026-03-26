@@ -24,7 +24,7 @@ spec:
             - name: NODE_ENV
               value: production
             - name: NODE_OPTIONS
-              value: --max-old-space-size=400
+              value: --max-old-space-size=1024
             - name: DB_HOSTNAME
               value: postgres-shared.core.svc.cluster.local
             - name: DB_PORT
@@ -33,6 +33,10 @@ spec:
               value: postgres
             - name: DB_DATABASE_NAME
               value: immich
+            - name: IMMICH_WORKERS
+              value: "1"
+            - name: IMMICH_CONCURRENCY
+              value: "2"
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
