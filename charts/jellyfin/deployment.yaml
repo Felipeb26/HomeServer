@@ -38,10 +38,10 @@ spec:
               value: compute,video,utility
           resources:
             requests:
-              memory: 256Mi
+              memory: 356Mi
               cpu: 100m
             limits:
-              memory: 3Gi
+              memory: 4Gi
               cpu: 2000m
               nvidia.com/gpu: 1
           volumeMounts:
@@ -51,6 +51,19 @@ spec:
               mountPath: /data
             - name: transcode
               mountPath: /transcode
+          startupProbe:              # ← aqui
+            httpGet:
+              path: /health
+              port: 8096
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:             # ← e aqui
+            httpGet:
+              path: /health
+              port: 8096
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 3
       volumes:
         - name: config
           hostPath:
