@@ -17,6 +17,7 @@ spec:
         supplementalGroups:
           - 992
           - 44
+      runtimeClassName: nvidia
       containers:
         - name: jellyfin
           image: linuxserver/jellyfin:latest
@@ -38,6 +39,7 @@ spec:
             limits:
               memory: 1Gi
               cpu: 2000m
+              nvidia.com/gpu: 1
           volumeMounts:
             - name: config
               mountPath: /config
