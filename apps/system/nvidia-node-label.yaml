@@ -1,0 +1,80 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: node-labeler
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-labeler
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node-labeler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: node-labeler
+subjects:
+  - kind: ServiceAccount
+    name: node-labeler
+    namespace: kube-system
+---
+# Job que roda uma vez no apply (garante label imediata via ArgoCD)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nvidia-node-label
+  namespace: kube-system
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    spec:
+      serviceAccountName: node-labeler
+      restartPolicy: OnFailure
+      containers:
+        - name: labeler
+          image: bitnami/kubectl:latest
+          command:
+            - kubectl
+            - label
+            - node
+            - batsworks-elite
+            - nvidia.com/gpu.present=true
+            - --overwrite
+---
+# CronJob que reaplica a label a cada 5 minutos (garante persistência após reboot)
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nvidia-node-label-sync
+  namespace: kube-system
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: node-labeler
+          restartPolicy: OnFailure
+          containers:
+            - name: labeler
+              image: bitnami/kubectl:latest
+              command:
+                - kubectl
+                - label
+                - node
+                - batsworks-elite
+                - nvidia.com/gpu.present=true
+                - --overwrite

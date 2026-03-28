@@ -13,6 +13,7 @@ spec:
       labels:
         app: immich-server
     spec:
+      runtimeClassName: nvidia
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:release
@@ -96,6 +97,7 @@ spec:
       labels:
         app: immich-machine-learning
     spec:
+      runtimeClassName: nvidia
       containers:
         - name: immich-machine-learning
           image: ghcr.io/immich-app/immich-machine-learning:release
