@@ -13,7 +13,6 @@ spec:
       labels:
         app: immich-server
     spec:
-      runtimeClassName: nvidia
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:release
@@ -61,7 +60,6 @@ spec:
             limits:
               memory: 3Gi
               cpu: 2000m
-              nvidia.com/gpu: 1
           volumeMounts:
             - name: upload
               mountPath: /usr/src/app/upload
