@@ -47,6 +47,14 @@ spec:
             timeoutSeconds: 3
             periodSeconds: 15
             failureThreshold: 3
+          readinessProbe:           # ← adiciona isso
+            httpGet:
+              path: /api/v1/status
+              port: 5055
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 2
           volumeMounts:
             - name: config
               mountPath: /app/config
