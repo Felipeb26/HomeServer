@@ -27,7 +27,7 @@ spec:
             - name: TZ
               value: America/Sao_Paulo
             - name: LT_LOAD_ONLY
-              value: "en,pt,ja,ko,zh"
+              value: "en,pt,ja,ko,zh,pb,ru,es,fr,it,de"
           volumeMounts:
             - name: data
               mountPath: /home/libretranslate/.local/share/argos-translate
