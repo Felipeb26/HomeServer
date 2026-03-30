@@ -21,4 +21,4 @@ spec:
               service:
                 name: lingarr
                 port:
-                  number: 7765
+                  number: 8080
