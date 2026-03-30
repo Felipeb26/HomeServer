@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: lingarr
-          image: ghcr.io/lingarr/lingarr:latest
+          image: lingarr/lingarr:main
           ports:
             - containerPort: 7765
           env:
