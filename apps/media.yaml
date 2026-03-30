@@ -169,3 +169,23 @@ spec:
       prune: true
       selfHeal: true
 ---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: libretranslate
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Felipeb26/HomeServer.git
+    targetRevision: HEAD
+    path: charts/libretranslate
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+

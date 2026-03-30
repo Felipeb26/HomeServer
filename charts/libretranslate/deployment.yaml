@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: libretranslate
+  namespace: media
+  labels:
+    app: libretranslate
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: libretranslate
+  template:
+    metadata:
+      labels:
+        app: libretranslate
+    spec:
+      containers:
+        - name: libretranslate
+          image: libretranslate/libretranslate:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: LT_LOAD_ONLY
+              value: "en,pt,ja,ko,zh"
+          volumeMounts:
+            - name: data
+              mountPath: /home/libretranslate/.local/share/argos-translate
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 200m
+            limits:
+              memory: 2Gi
+              cpu: 1000m
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/tank-hd/libretranslate
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: libretranslate
+  namespace: media
+spec:
+  selector:
+    app: libretranslate
+  ports:
+    - port: 5000
+      targetPort: 5000
