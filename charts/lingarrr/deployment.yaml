@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lingarr
+  namespace: media
+  labels:
+    app: lingarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: lingarr
+  template:
+    metadata:
+      labels:
+        app: lingarr
+    spec:
+      containers:
+        - name: lingarr
+          image: ghcr.io/lingarr/lingarr:latest
+          ports:
+            - containerPort: 7765
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+      volumes:
+        - name: config
+          hostPath:
+            path: /mnt/tank-hd/lingarr
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lingarr
+  namespace: media
+spec:
+  selector:
+    app: lingarr
+  ports:
+    - port: 7765
+      targetPort: 7765
