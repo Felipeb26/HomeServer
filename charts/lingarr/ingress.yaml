@@ -4,13 +4,11 @@ metadata:
   name: lingarr
   namespace: media
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-dns
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - lingarr.batsworks.com.br
-      secretName: lingarr-tls
   rules:
     - host: lingarr.batsworks.com.br
       http:
@@ -22,3 +20,7 @@ spec:
                 name: lingarr
                 port:
                   number: 8080
+  tls:
+    - hosts:
+        - lingarr.batsworks.com.br
+      secretName: tls-lingarr
