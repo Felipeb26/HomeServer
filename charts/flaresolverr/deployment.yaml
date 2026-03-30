@@ -28,9 +28,9 @@ spec:
             - name: CAPTCHA_SOLVER
               value: none
             - name: BROWSER_TIMEOUT
-              value: "40000"
+              value: "70000"
             - name: MAX_TIMEOUT
-              value: "60000"
+              value: "120000"
             - name: SESSION_TIMEOUT
               value: "300"
             - name: CHROME_ARGS
@@ -40,7 +40,7 @@ spec:
               memory: 256Mi
               cpu: 50m
             limits:
-              memory: 512Mi
+              memory: 700Mi
               cpu: 500m
 ---
 apiVersion: v1
