@@ -29,6 +29,8 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /app/config
+            - name: media
+              mountPath: /data
           resources:
             requests:
               memory: 256Mi
@@ -41,6 +43,10 @@ spec:
           hostPath:
             path: /mnt/tank-hd/lingarr
             type: DirectoryOrCreate
+        - name: media
+          hostPath:
+            path: /mnt/big_storage/Torrent
+            type: Directory
 ---
 apiVersion: v1
 kind: Service
