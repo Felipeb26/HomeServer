@@ -1,23 +1,56 @@
 persistentVolumeClaim:
   create: false
-
 extraVolumes:
   - name: data
     hostPath:
       path: /mnt/tank-hd/uptime-kuma
       type: DirectoryOrCreate
-
 extraVolumeMounts:
   - name: data
     mountPath: /app/data
-
 service:
   enabled: true
   type: ClusterIP
-
 env:
   - name: TZ
     value: America/Sao_Paulo
+
+# Adicionar:
+resources:
+  requests:
+    cpu: 10m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+    scheme: HTTP
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+    scheme: HTTP
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+    scheme: HTTP
+  failureThreshold: 30
+  periodSeconds: 10
 
 ingress:
   enabled: true
