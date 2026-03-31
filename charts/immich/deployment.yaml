@@ -102,7 +102,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: immich-machine-learning
-          image: ghcr.io/immich-app/immich-machine-learning:release
+          image: ghcr.io/immich-app/immich-machine-learning:release-cuda
           ports:
             - containerPort: 3003
           env:
@@ -114,6 +114,12 @@ spec:
               value: /cache
             - name: MACHINE_LEARNING_WORKERS
               value: "1"
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: compute,utility
+            - name: MACHINE_LEARNING_DEVICE
+              value: cuda 
           resources:
             requests:
               memory: 256Mi
