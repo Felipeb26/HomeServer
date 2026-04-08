@@ -55,6 +55,8 @@ spec:
               mountPath: /logs
             - name: data
               mountPath: /data
+            - name: cache
+              mountPath: /root/.cache/rclone
       volumes:
         - name: config
           hostPath:
@@ -68,6 +70,11 @@ spec:
           hostPath:
             path: /mnt/big_storage/immich/library
             type: DirectoryOrCreate
+        - name: cache
+          hostPath:
+            path: /mnt/tank-hd/rclone/cache
+            type: DirectoryOrCreate
+
 ---
 apiVersion: v1
 kind: Service
