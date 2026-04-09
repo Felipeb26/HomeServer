@@ -17,6 +17,7 @@ spec:
         supplementalGroups:
           - 992
           - 44
+      runtimeClassName: nvidia
       containers:
         - name: fileflows
           image: revenz/fileflows:latest
@@ -31,13 +32,20 @@ spec:
               value: "1000"
             - name: TempPathHost
               value: /mnt/big_storage
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: compute,utility
+            - name: MACHINE_LEARNING_DEVICE
+              value: cuda 
           resources:
             requests:
               memory: 256Mi
-              cpu: 100m
+              cpu: 30m
             limits:
               memory: 2Gi
               cpu: 2000m
+              nvidia.com/gpu: 1
           volumeMounts:
             - name: data
               mountPath: /app/Data
