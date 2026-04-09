@@ -16,7 +16,7 @@ spec:
       hostNetwork: false
       containers:
         - name: adguard
-          image: adguard/adguardhome:latest
+          image: adguard/adguardhome:v0.108.0-b.84
           ports:
             - containerPort: 3000
               name: setup
