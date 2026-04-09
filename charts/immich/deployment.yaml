@@ -5,6 +5,8 @@ metadata:
   namespace: immich
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: immich-server
@@ -13,6 +15,7 @@ spec:
       labels:
         app: immich-server
     spec:
+      runtimeClassName: nvidia
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:release
@@ -52,14 +55,20 @@ spec:
                   name: redis-secret
                   key: password
             - name: IMMICH_MACHINE_LEARNING_URL
-              value: http://immich-machine-learning.immich.svc.cluster.local:3003
+              value: http://immich-machine-learning.immich.svc.cluster.local:3003            
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: compute,video,utility
           resources:
             requests:
               memory: 256Mi
               cpu: 100m
+              nvidia.com/gpu: 1
             limits:
               memory: 3Gi
               cpu: 2000m
+              nvidia.com/gpu: 1
           volumeMounts:
             - name: upload
               mountPath: /usr/src/app/upload
