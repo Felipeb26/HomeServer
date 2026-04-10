@@ -114,6 +114,8 @@ spec:
           ports:
             - containerPort: 3003
           env:
+            - name: TimeZone
+              value: America/Sao_Paulo
             - name: TZ
               value: America/Sao_Paulo
             - name: TRANSFORMERS_CACHE
@@ -122,12 +124,16 @@ spec:
               value: /cache
             - name: MACHINE_LEARNING_WORKERS
               value: "1"
+            - name: MACHINE_LEARNING_MODEL_TTL
+              value: "300"
+            - name: MACHINE_LEARNING_MODEL_TTL_POLL_S
+              value: "60"
             - name: NVIDIA_VISIBLE_DEVICES
               value: all
             - name: NVIDIA_DRIVER_CAPABILITIES
               value: compute,utility
             - name: MACHINE_LEARNING_DEVICE
-              value: cuda 
+              value: cuda
           resources:
             requests:
               memory: 256Mi
