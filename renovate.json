@@ -2,6 +2,5 @@
   "extends": ["config:base"],
   "kubernetes": {
     "fileMatch": ["(^|/)charts/.+\\.yaml$"]
-  },
-  "schedule": ["every weekend"]
+  }
 }
