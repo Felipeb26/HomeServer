@@ -64,6 +64,8 @@ spec:
               mountPath: /app/common
             - name: media
               mountPath: /media
+            - name: mp4
+              mountPath: /mp4 
             - name: temp
               mountPath: /temp
             - name: docker-sock
@@ -87,7 +89,7 @@ spec:
           hostPath:
             path: /mnt/big_storage/Torrent
             type: DirectoryOrCreate
-        - name: media
+        - name: mp4
           hostPath:
             path: /mnt/big_storage/immich/library
             type: DirectoryOrCreate
