@@ -23,13 +23,6 @@ spec:
       containers:
         - name: fileflows
           image: revenz/fileflows:latest
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - sh
-                  - -c
-                  - apt-get update && apt-get install -y ffmpeg
           ports:
             - containerPort: 5000
           env:
@@ -65,13 +58,15 @@ spec:
             - name: media
               mountPath: /media
             - name: mp4
-              mountPath: /mp4 
+              mountPath: /mp4
             - name: temp
               mountPath: /temp
             - name: docker-sock
               mountPath: /run/k3s/containerd/containerd.sock
             - name: dri
               mountPath: /dev/dri
+            - name: ffmpeg
+              mountPath: /usr/bin/ffmpeg
       volumes:
         - name: data
           hostPath:
@@ -104,6 +99,10 @@ spec:
         - name: dri
           hostPath:
             path: /dev/dri
+        - name: ffmpeg
+          hostPath:
+            path: /usr/bin/ffmpeg
+            type: File
 ---
 apiVersion: v1
 kind: Service
