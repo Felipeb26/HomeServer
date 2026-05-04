@@ -23,6 +23,13 @@ spec:
       containers:
         - name: fileflows
           image: revenz/fileflows:latest
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - apt-get update && apt-get install -y ffmpeg
           ports:
             - containerPort: 5000
           env:
@@ -39,7 +46,7 @@ spec:
             - name: NVIDIA_DRIVER_CAPABILITIES
               value: compute,utility
             - name: MACHINE_LEARNING_DEVICE
-              value: cuda 
+              value: cuda
           resources:
             requests:
               memory: 256Mi
@@ -79,6 +86,10 @@ spec:
         - name: media
           hostPath:
             path: /mnt/big_storage/Torrent
+            type: DirectoryOrCreate
+        - name: media
+          hostPath:
+            path: /mnt/big_storage/immich/library
             type: DirectoryOrCreate
         - name: temp
           hostPath:
