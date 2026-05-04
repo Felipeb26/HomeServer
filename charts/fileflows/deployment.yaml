@@ -58,7 +58,7 @@ spec:
             - name: temp
               mountPath: /temp
             - name: docker-sock
-              mountPath: /var/run/docker.sock
+              mountPath: /run/k3s/containerd/containerd.sock
             - name: dri
               mountPath: /dev/dri
       volumes:
@@ -84,7 +84,7 @@ spec:
             type: DirectoryOrCreate
         - name: docker-sock
           hostPath:
-            path: /var/run/docker.sock
+            path: /run/k3s/containerd/containerd.sock
             type: Socket
         - name: dri
           hostPath:
