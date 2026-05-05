@@ -65,8 +65,6 @@ spec:
               mountPath: /run/k3s/containerd/containerd.sock
             - name: dri
               mountPath: /dev/dri
-            - name: ffmpeg
-              mountPath: /usr/bin/ffmpeg
       volumes:
         - name: data
           hostPath:
@@ -99,10 +97,6 @@ spec:
         - name: dri
           hostPath:
             path: /dev/dri
-        - name: ffmpeg
-          hostPath:
-            path: /usr/bin/ffmpeg
-            type: File
 ---
 apiVersion: v1
 kind: Service
