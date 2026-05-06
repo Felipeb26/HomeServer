@@ -15,15 +15,16 @@ spec:
       labels:
         app: fileflows
     spec:
-      runtimeClassName: nvidia
       securityContext:
         supplementalGroups:
-          - 44
           - 992
+          - 44
+      runtimeClassName: nvidia
       containers:
         - name: fileflows
           image: revenz/fileflows:latest
-
+          ports:
+            - containerPort: 5000
           env:
             - name: TZ
               value: America/Sao_Paulo
@@ -31,30 +32,77 @@ spec:
               value: "1000"
             - name: PGID
               value: "1000"
-
-            # 🔥 GPU
+            - name: TempPathHost
+              value: /tmp/fileflows
             - name: NVIDIA_VISIBLE_DEVICES
               value: all
             - name: NVIDIA_DRIVER_CAPABILITIES
-              value: compute,video,utility
-
+              value: compute,utility
             - name: MACHINE_LEARNING_DEVICE
               value: cuda
-
           resources:
+            requests:
+              memory: 256Mi
+              cpu: 50m
             limits:
+              memory: 2Gi
+              cpu: 2000m
               nvidia.com/gpu: 1
-
           volumeMounts:
-            # ffmpeg do host
+            - name: data
+              mountPath: /app/Data
+            - name: logs
+              mountPath: /app/Logs
+            - name: common
+              mountPath: /app/common
+            - name: media
+              mountPath: /media
+            - name: mp4
+              mountPath: /mp4
+            - name: temp
+              mountPath: /temp
+            - name: docker-sock
+              mountPath: /run/k3s/containerd/containerd.sock
+            - name: dri
+              mountPath: /dev/dri
             - name: ffmpeg
               mountPath: /usr/bin/ffmpeg
-              readOnly: true
             - name: ffprobe
               mountPath: /usr/bin/ffprobe
-              readOnly: true
-
+            - name: ffmpeg-libs
+              mountPath: /usr/lib/x86_64-linux-gnu
       volumes:
+        - name: data
+          hostPath:
+            path: /mnt/big_storage/fileflow/data
+            type: DirectoryOrCreate
+        - name: logs
+          hostPath:
+            path: /mnt/big_storage/fileflow/logs
+            type: DirectoryOrCreate
+        - name: common
+          hostPath:
+            path: /mnt/big_storage/fileflow/common
+            type: DirectoryOrCreate
+        - name: media
+          hostPath:
+            path: /mnt/big_storage/Torrent
+            type: DirectoryOrCreate
+        - name: mp4
+          hostPath:
+            path: /mnt/big_storage/immich/library
+            type: DirectoryOrCreate
+        - name: temp
+          hostPath:
+            path: /tmp/fileflows
+            type: DirectoryOrCreate
+        - name: docker-sock
+          hostPath:
+            path: /run/k3s/containerd/containerd.sock
+            type: Socket
+        - name: dri
+          hostPath:
+            path: /dev/dri
         - name: ffmpeg
           hostPath:
             path: /usr/bin/ffmpeg
@@ -63,3 +111,19 @@ spec:
           hostPath:
             path: /usr/bin/ffprobe
             type: File
+        - name: ffmpeg-libs
+          hostPath:
+            path: /usr/lib/x86_64-linux-gnu
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fileflows
+  namespace: media
+spec:
+  selector:
+    app: fileflows
+  ports:
+    - port: 5000
+      targetPort: 5000
