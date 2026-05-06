@@ -42,8 +42,8 @@ spec:
               value: cuda
           resources:
             requests:
-              memory: 256Mi
-              cpu: 50m
+              memory: 1Gi
+              cpu: 500m
             limits:
               memory: 6Gi
               cpu: 2000m
