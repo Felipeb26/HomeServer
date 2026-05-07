@@ -6,7 +6,7 @@ metadata:
   namespace: monitoring
 type: Opaque
 stringData:
-  PGADMIN_DEFAULT_EMAIL: "admin@batsworks.com.br"
+  PGADMIN_DEFAULT_EMAIL: "felipe.batista.silva@batsworks.com.br"
   PGADMIN_DEFAULT_PASSWORD: "CHANGEME"
 ---
 apiVersion: v1
