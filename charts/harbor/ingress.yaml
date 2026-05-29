@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: harbor-ingress
+  name: nexus-ingress
   namespace: development
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -12,51 +12,27 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - harbor.batsworks.com.br
-      secretName: harbor-tls
+        - nexus.batsworks.com.br
+        - registry.batsworks.com.br
+      secretName: nexus-tls
   rules:
-    - host: harbor.batsworks.com.br
+    - host: nexus.batsworks.com.br
       http:
         paths:
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: harbor-core
-                port:
-                  number: 8080
-          - path: /service
-            pathType: Prefix
-            backend:
-              service:
-                name: harbor-core
-                port:
-                  number: 8080
-          - path: /v2
-            pathType: Prefix
-            backend:
-              service:
-                name: harbor-core
-                port:
-                  number: 8080
-          - path: /chartrepo
-            pathType: Prefix
-            backend:
-              service:
-                name: harbor-core
-                port:
-                  number: 8080
-          - path: /c
-            pathType: Prefix
-            backend:
-              service:
-                name: harbor-core
-                port:
-                  number: 8080
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: harbor-portal
+                name: nexus
                 port:
-                  number: 8080
+                  number: 8081
+    - host: registry.batsworks.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nexus
+                port:
+                  number: 5000
