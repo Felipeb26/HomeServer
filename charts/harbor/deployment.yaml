@@ -6,337 +6,77 @@ metadata:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: harbor-registry-pv
+  name: nexus-pv
 spec:
   capacity:
     storage: 200Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-path
   hostPath:
-    path: /mnt/tank-hd/harbor/registry
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: harbor-jobservice-pv
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/tank-hd/harbor/jobservice
+    path: /mnt/tank-hd/nexus
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: harbor-registry-pvc
+  name: nexus-pvc
   namespace: development
 spec:
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 200Gi
-  volumeName: harbor-registry-pv
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: harbor-jobservice-pvc
-  namespace: development
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  volumeName: harbor-jobservice-pv
+  volumeName: nexus-pv
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: harbor-core
+  name: nexus
   namespace: development
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: harbor-core
+      app: nexus
   template:
     metadata:
       labels:
-        app: harbor-core
+        app: nexus
     spec:
       containers:
-        - name: harbor-core
-          image: goharbor/harbor-core:v2.15.1
+        - name: nexus
+          image: sonatype/nexus3:latest
           env:
-            - name: TZ
-              value: America/Sao_Paulo
-            - name: DATABASE_TYPE
-              value: postgresql
-            - name: POSTGRESQL_HOST
-              value: postgres-shared.core.svc.cluster.local
-            - name: POSTGRESQL_PORT
-              value: "5432"
-            - name: POSTGRESQL_DATABASE
-              value: harbor
-            - name: POSTGRESQL_USERNAME
-              value: postgres
-            - name: POSTGRESQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: password
-            - name: POSTGRESQL_SSLMODE
-              value: disable
-            - name: REDIS_HOST
-              value: redis-shared.core.svc.cluster.local
-            - name: REDIS_PORT
-              value: "6379"
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis-secret
-                  key: password
-            - name: HARBOR_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: harbor-secret
-                  key: admin-password
-            - name: SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: harbor-secret
-                  key: secret-key
-            - name: EXT_ENDPOINT
-              value: https://harbor.batsworks.com.br
-            - name: CORE_URL
-              value: http://harbor-core.development.svc.cluster.local:8080
-            - name: JOBSERVICE_URL
-              value: http://harbor-jobservice.development.svc.cluster.local:8080
-            - name: REGISTRY_URL
-              value: http://harbor-registry.development.svc.cluster.local:5000
-            - name: TOKEN_SERVICE_URL
-              value: http://harbor-core.development.svc.cluster.local:8080/service/token
-            - name: CORE_LOCAL_URL
-              value: http://127.0.0.1:8080
+            - name: INSTALL4J_ADD_VM_PARAMS
+              value: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=2g"
           ports:
-            - containerPort: 8080
-          resources:
-            requests:
-              memory: 256Mi
-              cpu: 100m
-            limits:
-              memory: 512Mi
-              cpu: 300m
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: harbor-portal
-  namespace: development
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: harbor-portal
-  template:
-    metadata:
-      labels:
-        app: harbor-portal
-    spec:
-      containers:
-        - name: harbor-portal
-          image: goharbor/harbor-portal:v2.15.1
-          env:
-            - name: TZ
-              value: America/Sao_Paulo
-          ports:
-            - containerPort: 8080
-          resources:
-            requests:
-              memory: 64Mi
-              cpu: 20m
-            limits:
-              memory: 128Mi
-              cpu: 100m
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: harbor-registry
-  namespace: development
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: harbor-registry
-  template:
-    metadata:
-      labels:
-        app: harbor-registry
-    spec:
-      containers:
-        - name: harbor-registry
-          image: goharbor/registry-photon:v2.15.1
-          env:
-            - name: TZ
-              value: America/Sao_Paulo
-            - name: REGISTRY_HTTP_ADDR
-              value: ":5000"
-            - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-              value: /storage
-            - name: REGISTRY_REDIS_ADDR
-              value: redis-shared.core.svc.cluster.local:6379
-            - name: REGISTRY_REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis-secret
-                  key: password
+            - containerPort: 8081
           volumeMounts:
-            - name: registry-data
-              mountPath: /storage
-          ports:
-            - containerPort: 5000
+            - name: nexus-data
+              mountPath: /nexus-data
           resources:
             requests:
-              memory: 128Mi
-              cpu: 50m
+              memory: 2Gi
+              cpu: 250m
             limits:
-              memory: 512Mi
-              cpu: 300m
-        - name: harbor-registryctl
-          image: goharbor/harbor-registryctl:v2.15.1
-          env:
-            - name: CORE_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: harbor-secret
-                  key: secret-key
-            - name: JOBSERVICE_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: harbor-secret
-                  key: secret-key
-          volumeMounts:
-            - name: registry-data
-              mountPath: /storage
-          ports:
-            - containerPort: 8080
-          resources:
-            requests:
-              memory: 64Mi
-              cpu: 20m
-            limits:
-              memory: 128Mi
-              cpu: 100m
+              memory: 4Gi
+              cpu: 2
       volumes:
-        - name: registry-data
+        - name: nexus-data
           persistentVolumeClaim:
-            claimName: harbor-registry-pvc
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: harbor-jobservice
-  namespace: development
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: harbor-jobservice
-  template:
-    metadata:
-      labels:
-        app: harbor-jobservice
-    spec:
-      containers:
-        - name: harbor-jobservice
-          image: goharbor/harbor-jobservice:v2.15.1
-          env:
-            - name: TZ
-              value: America/Sao_Paulo
-            - name: CORE_URL
-              value: http://harbor-core.development.svc.cluster.local:8080
-            - name: TOKEN_SERVICE_URL
-              value: http://harbor-core.development.svc.cluster.local:8080/service/token
-            - name: REGISTRY_URL
-              value: http://harbor-registry.development.svc.cluster.local:5000
-            - name: REDIS_HOST
-              value: redis-shared.core.svc.cluster.local
-            - name: REDIS_PORT
-              value: "6379"
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis-secret
-                  key: password
-          volumeMounts:
-            - name: jobservice-data
-              mountPath: /var/log/jobs
-          ports:
-            - containerPort: 8080
-          resources:
-            requests:
-              memory: 128Mi
-              cpu: 50m
-            limits:
-              memory: 256Mi
-              cpu: 200m
-      volumes:
-        - name: jobservice-data
-          persistentVolumeClaim:
-            claimName: harbor-jobservice-pvc
+            claimName: nexus-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: harbor-core
+  name: nexus
   namespace: development
 spec:
   selector:
-    app: harbor-core
+    app: nexus
   ports:
-    - port: 8080
-      targetPort: 8080
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: harbor-portal
-  namespace: development
-spec:
-  selector:
-    app: harbor-portal
-  ports:
-    - port: 8080
-      targetPort: 8080
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: harbor-registry
-  namespace: development
-spec:
-  selector:
-    app: harbor-registry
-  ports:
-    - name: registry
-      port: 5000
-      targetPort: 5000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: harbor-jobservice
-  namespace: development
-spec:
-  selector:
-    app: harbor-jobservice
-  ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8081
+      targetPort: 8081
