@@ -60,6 +60,8 @@ spec:
               value: "https"
             - name: AUTHENTIK_AUTHENTIK__DOMAIN
               value: "authentik.batsworks.com.br"
+            - name: AUTHENTIK_LISTEN__TRUSTED_PROXY_CIDRS
+              value: "0.0.0.0/0"
           resources:
             requests:
               memory: 256Mi
