@@ -48,7 +48,7 @@ spec:
     spec:
       containers:
         - name: nexus
-          image: sonatype/nexus3:latest
+          image: sonatype/nexus:oss
           env:
             - name: INSTALL4J_ADD_VM_PARAMS
               value: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=2g"
