@@ -1,3 +1,60 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: development
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: harbor-registry-pv
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/tank-hd/harbor/registry
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: harbor-jobservice-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/tank-hd/harbor/jobservice
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-registry-pvc
+  namespace: development
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+  volumeName: harbor-registry-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-jobservice-pvc
+  namespace: development
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: harbor-jobservice-pv
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -130,7 +187,7 @@ spec:
             - name: TZ
               value: America/Sao_Paulo
             - name: REGISTRY_HTTP_ADDR
-              value: :5000
+              value: ":5000"
             - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
               value: /storage
             - name: REGISTRY_REDIS_ADDR
@@ -234,58 +291,6 @@ spec:
         - name: jobservice-data
           persistentVolumeClaim:
             claimName: harbor-jobservice-pvc
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: harbor-registry-pv
-spec:
-  capacity:
-    storage: 200Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/tank-hd/harbor/registry
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: harbor-registry-pvc
-  namespace: development
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 200Gi
-  volumeName: harbor-registry-pv
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: harbor-jobservice-pv
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/tank-hd/harbor/jobservice
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: harbor-jobservice-pvc
-  namespace: development
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  volumeName: harbor-jobservice-pv
 ---
 apiVersion: v1
 kind: Service
