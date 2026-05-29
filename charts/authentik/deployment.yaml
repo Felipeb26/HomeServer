@@ -53,9 +53,13 @@ spec:
             - name: AUTHENTIK_WEB__LISTEN__HTTP
               value: "0.0.0.0:9000"
             - name: AUTHENTIK_WEB__LISTEN__HTTPS
-              value: "0.0.0.0:9443"  
+              value: "0.0.0.0:9443"
             - name: AUTHENTIK_WEB__DISABLE_HTTPS_REDIRECT
               value: "true"
+            - name: AUTHENTIK_AUTHENTIK__DEFAULT_HTTP_PROTOCOL
+              value: "https"
+            - name: AUTHENTIK_AUTHENTIK__DOMAIN
+              value: "authentik.batsworks.com.br"
           resources:
             requests:
               memory: 256Mi
@@ -131,6 +135,10 @@ spec:
                 secretKeyRef:
                   name: authentik-secret
                   key: secret-key
+            - name: AUTHENTIK_AUTHENTIK__DEFAULT_HTTP_PROTOCOL
+              value: "https"
+            - name: AUTHENTIK_AUTHENTIK__DOMAIN
+              value: "authentik.batsworks.com.br"
           resources:
             requests:
               memory: 256Mi
