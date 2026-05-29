@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: registry
+  name: development
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: harbor-registry-pv
+  name: harbor-development-pv
 spec:
   capacity:
     storage: 200Gi
@@ -14,20 +14,20 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /mnt/tank-hd/harbor/registry
+    path: /mnt/tank-hd/harbor/development
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: harbor-registry-pvc
-  namespace: registry
+  name: harbor-development-pvc
+  namespace: development
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 200Gi
-  volumeName: harbor-registry-pv
+  volumeName: harbor-development-pv
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -46,7 +46,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: harbor-jobservice-pvc
-  namespace: registry
+  namespace: development
 spec:
   accessModes:
     - ReadWriteOnce
@@ -59,7 +59,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: harbor-core
-  namespace: registry
+  namespace: development
 spec:
   replicas: 1
   selector:
@@ -115,13 +115,13 @@ spec:
             - name: EXT_ENDPOINT
               value: https://harbor.batsworks.com.br
             - name: CORE_URL
-              value: http://harbor-core.registry.svc.cluster.local:8080
+              value: http://harbor-core.development.svc.cluster.local:8080
             - name: JOBSERVICE_URL
-              value: http://harbor-jobservice.registry.svc.cluster.local:8080
-            - name: REGISTRY_URL
-              value: http://harbor-registry.registry.svc.cluster.local:5000
+              value: http://harbor-jobservice.development.svc.cluster.local:8080
+            - name: development_URL
+              value: http://harbor-development.development.svc.cluster.local:5000
             - name: TOKEN_SERVICE_URL
-              value: http://harbor-core.registry.svc.cluster.local:8080/service/token
+              value: http://harbor-core.development.svc.cluster.local:8080/service/token
             - name: CORE_LOCAL_URL
               value: http://127.0.0.1:8080
           ports:
@@ -138,7 +138,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: harbor-portal
-  namespace: registry
+  namespace: development
 spec:
   replicas: 1
   selector:
@@ -168,33 +168,33 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: harbor-registry
-  namespace: registry
+  name: harbor-development
+  namespace: development
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: harbor-registry
+      app: harbor-development
   template:
     metadata:
       labels:
-        app: harbor-registry
+        app: harbor-development
     spec:
       containers:
-        - name: harbor-registry
-          image: goharbor/registry-photon:v2.11.1
+        - name: harbor-development
+          image: goharbor/development-photon:v2.11.1
           env:
             - name: TZ
               value: America/Sao_Paulo
-            - name: REGISTRY_REDIS_ADDR
+            - name: development_REDIS_ADDR
               value: redis-shared.core.svc.cluster.local:6379
-            - name: REGISTRY_REDIS_PASSWORD
+            - name: development_REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: redis-secret
                   key: password
           volumeMounts:
-            - name: registry-data
+            - name: development-data
               mountPath: /storage
           ports:
             - containerPort: 5000
@@ -206,8 +206,8 @@ spec:
             limits:
               memory: 512Mi
               cpu: 300m
-        - name: harbor-registryctl
-          image: goharbor/harbor-registryctl:v2.11.1
+        - name: harbor-developmentctl
+          image: goharbor/harbor-developmentctl:v2.11.1
           env:
             - name: CORE_SECRET
               valueFrom:
@@ -220,7 +220,7 @@ spec:
                   name: harbor-secret
                   key: secret-key
           volumeMounts:
-            - name: registry-data
+            - name: development-data
               mountPath: /storage
           ports:
             - containerPort: 8080
@@ -232,15 +232,15 @@ spec:
               memory: 128Mi
               cpu: 100m
       volumes:
-        - name: registry-data
+        - name: development-data
           persistentVolumeClaim:
-            claimName: harbor-registry-pvc
+            claimName: harbor-development-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: harbor-jobservice
-  namespace: registry
+  namespace: development
 spec:
   replicas: 1
   selector:
@@ -258,11 +258,11 @@ spec:
             - name: TZ
               value: America/Sao_Paulo
             - name: CORE_URL
-              value: http://harbor-core.registry.svc.cluster.local:8080
+              value: http://harbor-core.development.svc.cluster.local:8080
             - name: TOKEN_SERVICE_URL
-              value: http://harbor-core.registry.svc.cluster.local:8080/service/token
-            - name: REGISTRY_URL
-              value: http://harbor-registry.registry.svc.cluster.local:5000
+              value: http://harbor-core.development.svc.cluster.local:8080/service/token
+            - name: development_URL
+              value: http://harbor-development.development.svc.cluster.local:5000
             - name: REDIS_HOST
               value: redis-shared.core.svc.cluster.local
             - name: REDIS_PORT
@@ -293,7 +293,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: harbor-core
-  namespace: registry
+  namespace: development
 spec:
   selector:
     app: harbor-core
@@ -305,7 +305,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: harbor-portal
-  namespace: registry
+  namespace: development
 spec:
   selector:
     app: harbor-portal
@@ -316,13 +316,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: harbor-registry
-  namespace: registry
+  name: harbor-development
+  namespace: development
 spec:
   selector:
-    app: harbor-registry
+    app: harbor-development
   ports:
-    - name: registry
+    - name: development
       port: 5000
       targetPort: 5000
     - name: controller
@@ -333,7 +333,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: harbor-jobservice
-  namespace: registry
+  namespace: development
 spec:
   selector:
     app: harbor-jobservice
