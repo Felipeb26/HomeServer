@@ -335,5 +335,3 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
-kubectl logs -n development deploy/harbor-core
-```
