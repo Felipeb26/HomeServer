@@ -53,10 +53,10 @@ spec:
           env:
             # - name: NEXUS_CONTEXT
             #   value: /
-          - name: INSTALL4J_ADD_VM_PARAMS
-              value: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=2g"
-          - name: JAVA_OPTS
-              value: "-Djetty.http.forwarded=true -Djava.util.prefs.userRoot=/nexus-data/javaprefs"
+            - name: INSTALL4J_ADD_VM_PARAMS
+                value: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=2g"
+            - name: JAVA_OPTS
+                value: "-Djetty.http.forwarded=true -Djava.util.prefs.userRoot=/nexus-data/javaprefs"
             # - name: NEXUS_DATA
             #   value: /nexus-data
           ports:
