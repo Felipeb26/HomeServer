@@ -72,7 +72,7 @@ spec:
     spec:
       containers:
         - name: harbor-core
-          image: goharbor/harbor-core:v2.11.1
+          image: goharbor/harbor-core:v2.15.1
           env:
             - name: TZ
               value: America/Sao_Paulo
