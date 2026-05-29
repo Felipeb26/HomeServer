@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:latest
+          image: ghcr.io/goauthentik/server:2026.5.2
           args:
             - server
           ports:
@@ -37,8 +37,6 @@ spec:
               value: postgres
             - name: AUTHENTIK_ERROR_REPORTING__ENABLED
               value: "false"
-            - name: AUTHENTIK_DOMAIN
-              value: authentik.batsworks.com.br
             - name: AUTHENTIK_POSTGRESQL__NAME
               value: authentik
             - name: AUTHENTIK_POSTGRESQL__PASSWORD
@@ -59,14 +57,14 @@ spec:
               memory: 1Gi
               cpu: 1000m
           volumeMounts:
-            - name: media
-              mountPath: /media
+            - name: data
+              mountPath: /data
             - name: certs
               mountPath: /certs
             - name: templates
               mountPath: /templates
       volumes:
-        - name: media
+        - name: data
           hostPath:
             path: /mnt/ext_ssh_bk/authentik/data
             type: DirectoryOrCreate
@@ -96,7 +94,7 @@ spec:
     spec:
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:latest
+          image: ghcr.io/goauthentik/server:2026.5.2
           args:
             - worker
           env:
@@ -133,14 +131,14 @@ spec:
               memory: 1Gi
               cpu: 1000m
           volumeMounts:
-            - name: media
-              mountPath: /media
+            - name: data
+              mountPath: /data
             - name: certs
               mountPath: /certs
             - name: templates
               mountPath: /templates
       volumes:
-        - name: media
+        - name: data
           hostPath:
             path: /mnt/ext_ssh_bk/authentik/data
             type: DirectoryOrCreate
