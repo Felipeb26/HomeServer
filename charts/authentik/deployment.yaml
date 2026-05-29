@@ -50,6 +50,12 @@ spec:
                 secretKeyRef:
                   name: authentik-secret
                   key: secret-key
+            - name: AUTHENTIK_WEB__LISTEN__HTTP
+              value: "0.0.0.0:9000"
+            - name: AUTHENTIK_WEB__LISTEN__HTTPS
+              value: "0.0.0.0:9443"  
+            - name: AUTHENTIK_WEB__DISABLE_HTTPS_REDIRECT
+              value: "true"
           resources:
             requests:
               memory: 256Mi
