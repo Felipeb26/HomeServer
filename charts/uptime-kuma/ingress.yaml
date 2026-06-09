@@ -7,12 +7,6 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/auth-url: "http://authentik-proxy-outpost.security.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx"
-    nginx.ingress.kubernetes.io/auth-signin: "https://authentik.batsworks.com.br/outpost.goauthentik.io/start?rd=$scheme://$host$request_uri"
-    nginx.ingress.kubernetes.io/auth-response-headers: >-
-      Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid
-    nginx.ingress.kubernetes.io/auth-snippet: |
-      proxy_set_header X-Forwarded-Host $http_host;
 spec:
   ingressClassName: nginx
   rules:
@@ -30,24 +24,3 @@ spec:
     - hosts:
         - uptime.batsworks.com.br
       secretName: tls-uptime-kuma
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: uptime-kuma-outpost
-  namespace: security
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-spec:
-  ingressClassName: nginx
-  rules:
-    - host: uptime.batsworks.com.br
-      http:
-        paths:
-          - path: /outpost.goauthentik.io
-            pathType: Prefix
-            backend:
-              service:
-                name: authentik-proxy-outpost
-                port:
-                  number: 9000
