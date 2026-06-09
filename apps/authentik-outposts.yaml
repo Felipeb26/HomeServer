@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authentik-outposts
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Felipeb26/HomeServer
+    targetRevision: HEAD
+    path: authentik-outposts
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: security
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
