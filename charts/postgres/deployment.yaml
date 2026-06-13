@@ -1,3 +1,38 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-shared-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /mnt/ext_ssh_bk/postgres
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - batsworks
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-shared-pvc
+  namespace: core
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 10Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,6 +58,13 @@ spec:
           image: tensorchord/pgvecto-rs:pg14-v0.2.0
           ports:
             - containerPort: 5432
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - pg_ctl stop -D /var/lib/postgresql/data/pgdata -m fast
           env:
             - name: TZ
               value: America/Sao_Paulo
@@ -47,20 +89,20 @@ spec:
             - -c
             - search_path='',public,vectors,drizzle
             - -c
-            - max_connections=100
+            - max_connections=200
             # memória global
             - -c
-            - shared_buffers=512MB
+            - shared_buffers=1GB
             - -c
-            - effective_cache_size=2GB
-            # memória por conexão (crítico)
+            - effective_cache_size=3GB
+            # memória por conexão
             - -c
-            - work_mem=2MB
+            - work_mem=8MB
             - -c
-            - maintenance_work_mem=128MB
+            - maintenance_work_mem=256MB
             # WAL / IO
             - -c
-            - wal_buffers=16MB
+            - wal_buffers=32MB
             - -c
             - min_wal_size=512MB
             - -c
@@ -74,7 +116,7 @@ spec:
             - -c
             - idle_in_transaction_session_timeout=30000
             - -c
-            - statement_timeout=60000
+            - statement_timeout=120000
             # TCP
             - -c
             - tcp_keepalives_idle=60
@@ -84,11 +126,11 @@ spec:
             - tcp_keepalives_count=5
             # paralelismo
             - -c
-            - max_parallel_workers_per_gather=2
+            - max_parallel_workers_per_gather=4
             - -c
-            - max_parallel_workers=4
+            - max_parallel_workers=8
             - -c
-            - max_worker_processes=4
+            - max_worker_processes=8
             # autovacuum
             - -c
             - autovacuum_vacuum_scale_factor=0.05
@@ -106,8 +148,8 @@ spec:
               memory: 512Mi
               cpu: 100m
             limits:
-              memory: 1Gi
-              cpu: 500m
+              memory: 5Gi
+              cpu: 1000m
           readinessProbe:
             exec:
               command:
@@ -123,22 +165,8 @@ spec:
               mountPath: /docker-entrypoint-initdb.d
       volumes:
         - name: data
-          hostPath:
-            path: /mnt/ext_ssh_bk/postgres
-            type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: postgres-shared-pvc
         - name: init-script
           configMap:
-            name: postgres-init
-            defaultMode: 0755
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-shared
-  namespace: core
-spec:
-  selector:
-    app: postgres-shared
-  ports:
-    - port: 5432
-      targetPort: 5432
+            name:
