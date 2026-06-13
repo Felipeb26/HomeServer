@@ -13,6 +13,7 @@ spec:
       labels:
         app: postgres-shared
     spec:
+      terminationGracePeriodSeconds: 120
       securityContext:
         runAsUser: 999
         runAsGroup: 999
