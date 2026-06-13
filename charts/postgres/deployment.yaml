@@ -18,7 +18,7 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - batsworks
+                - batsworks-elite
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
