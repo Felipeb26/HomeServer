@@ -69,7 +69,7 @@ spec:
               nvidia.com/gpu: 1
             limits:
               memory: 3Gi
-              cpu: 2000m
+              cpu: 3500m
               nvidia.com/gpu: 1
           volumeMounts:
             - name: upload
