@@ -75,7 +75,7 @@ spec:
               cpu: "50m"
             limits:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "750m"
           volumeMounts:
             - name: data
               mountPath: /var/lib/pgadmin
