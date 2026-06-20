@@ -45,7 +45,7 @@ spec:
         fsGroup: 200
       containers:
         - name: nexus
-          image: sonatype/nexus3:3.93.0
+          image: sonatype/nexus3:3.93.1
           securityContext:
             runAsUser: 200
             runAsGroup: 200
