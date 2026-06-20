@@ -13,8 +13,7 @@ spec:
       values: |
         controller:
           config:
-            # Fix necessário no k3s — sem isso o nginx não consegue
-            # ler os certificados TLS emitidos pelo cert-manager
+            allow-snippet-annotations: "true"
             main-snippet: |
               user root;
           # Garante que o controller sobe no nó correto (sem hostNetwork,
