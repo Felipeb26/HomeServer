@@ -73,27 +73,24 @@ spec:
               cpu: 1500m
               memory: 3Gi
           startupProbe:
-            httpGet:
-              path: /service/rest/v1/status
+            tcpSocket:
               port: 8081
             failureThreshold: 120
             periodSeconds: 5
           livenessProbe:
-            httpGet:
-              path: /service/rest/v1/status
+            tcpSocket:
               port: 8081
-            initialDelaySeconds: 180
+            initialDelaySeconds: 300
             periodSeconds: 30
             failureThreshold: 3
-            timeoutSeconds: 10
+            timeoutSeconds: 5
           readinessProbe:
-            httpGet:
-              path: /service/rest/v1/status
+            tcpSocket:
               port: 8081
-            initialDelaySeconds: 180
+            initialDelaySeconds: 300
             periodSeconds: 10
             failureThreshold: 2
-            timeoutSeconds: 10
+            timeoutSeconds: 5
       volumes:
         - name: nexus-data
           persistentVolumeClaim:
