@@ -73,23 +73,29 @@ spec:
               cpu: 1500m
               memory: 3Gi
           startupProbe:
-            tcpSocket:
-              port: 5000
-            failureThreshold: 120
-            periodSeconds: 5
+            httpGet:
+              path: /service/rest/v1/status
+              port: 8081
+            failureThreshold: 60    # 60 × 10s = 10 minutos para subir
+            periodSeconds: 10
+            timeoutSeconds: 5
+
           livenessProbe:
-            tcpSocket:
-              port: 5000
-            initialDelaySeconds: 300
+            httpGet:
+              path: /service/rest/v1/status
+              port: 8081
+            initialDelaySeconds: 0   # startupProbe já garantiu que subiu
             periodSeconds: 30
             failureThreshold: 3
             timeoutSeconds: 5
+
           readinessProbe:
-            tcpSocket:
-              port: 5000
-            initialDelaySeconds: 300
-            periodSeconds: 10
-            failureThreshold: 2
+            httpGet:
+              path: /service/rest/v1/status
+              port: 8081
+            initialDelaySeconds: 0
+            periodSeconds: 15
+            failureThreshold: 3
             timeoutSeconds: 5
       volumes:
         - name: nexus-data
