@@ -64,13 +64,29 @@ spec:
               value: compute,video,utility
           resources:
             requests:
-              memory: 256Mi
               cpu: 100m
+              memory: 512Mi
               nvidia.com/gpu: 1
             limits:
-              memory: 3Gi
-              cpu: 4500m
+              cpu: 2000m
+              memory: 2Gi
               nvidia.com/gpu: 1
+          livenessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: 2283
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
           volumeMounts:
             - name: upload
               mountPath: /usr/src/app/upload
@@ -138,12 +154,28 @@ spec:
               value: cuda
           resources:
             requests:
-              memory: 256Mi
               cpu: 100m
+              memory: 256Mi
             limits:
-              memory: 3Gi
-              cpu: 2000m
+              cpu: 1000m
+              memory: 2Gi
               nvidia.com/gpu: 1
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 3003
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
           volumeMounts:
             - name: cache
               mountPath: /cache

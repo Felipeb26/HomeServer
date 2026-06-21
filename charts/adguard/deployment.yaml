@@ -35,11 +35,27 @@ spec:
               value: America/Sao_Paulo
           resources:
             requests:
-              memory: 64Mi
               cpu: 50m
+              memory: 128Mi
             limits:
-              memory: 456Mi
-              cpu: 200m
+              cpu: 300m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
           volumeMounts:
             - name: data
               mountPath: /opt/adguardhome/work

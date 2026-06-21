@@ -14,6 +14,13 @@ spec:
       labels:
         app: authentik-server
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.35
+          command: ["sh", "-c", "until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done"]
+        - name: wait-for-redis
+          image: busybox:1.35
+          command: ["sh", "-c", "until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done"]
       containers:
         - name: authentik
           image: ghcr.io/goauthentik/server:2026.5.3
@@ -56,11 +63,27 @@ spec:
               value: "0.0.0.0:9443"
           resources:
             requests:
-              memory: 256Mi
               cpu: 100m
+              memory: 512Mi
             limits:
-              memory: 1Gi
               cpu: 1000m
+              memory: 1500Mi
+          livenessProbe:
+            httpGet:
+              path: /-/health/live/
+              port: 9000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /-/health/live/
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
           volumeMounts:
             - name: data
               mountPath: /data
@@ -98,6 +121,13 @@ spec:
       labels:
         app: authentik-worker
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.35
+          command: ["sh", "-c", "until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done"]
+        - name: wait-for-redis
+          image: busybox:1.35
+          command: ["sh", "-c", "until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done"]
       containers:
         - name: authentik
           image: ghcr.io/goauthentik/server:2026.5.3
@@ -131,11 +161,11 @@ spec:
                   key: secret-key
           resources:
             requests:
-              memory: 256Mi
               cpu: 100m
+              memory: 256Mi
             limits:
-              memory: 1Gi
-              cpu: 1000m
+              cpu: 500m
+              memory: 768Mi
           volumeMounts:
             - name: data
               mountPath: /data

@@ -67,11 +67,33 @@ spec:
               mountPath: /tmp
           resources:
             requests:
-              memory: 2Gi
               cpu: 250m
+              memory: 1500Mi
             limits:
-              memory: 4Gi
-              cpu: 2
+              cpu: 1500m
+              memory: 3Gi
+          startupProbe:
+            httpGet:
+              path: /service/rest/v1/status
+              port: 8081
+            failureThreshold: 60
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /service/rest/v1/status
+              port: 8081
+            initialDelaySeconds: 120
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /service/rest/v1/status
+              port: 8081
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
       volumes:
         - name: nexus-data
           persistentVolumeClaim:

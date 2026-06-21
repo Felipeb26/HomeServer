@@ -71,11 +71,27 @@ spec:
                 name: pgadmin-secret
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "50m"
+              cpu: 50m
+              memory: 256Mi
             limits:
-              memory: "512Mi"
-              cpu: "750m"
+              cpu: 500m
+              memory: 768Mi
+          livenessProbe:
+            httpGet:
+              path: /misc/ping
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /misc/ping
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
           volumeMounts:
             - name: data
               mountPath: /var/lib/pgadmin

@@ -42,11 +42,11 @@ spec:
               value: compute,video,utility
           resources:
             requests:
-              memory: 356Mi
               cpu: 100m
+              memory: 512Mi
             limits:
-              memory: 4Gi
               cpu: 2000m
+              memory: 3Gi
               nvidia.com/gpu: 1
           volumeMounts:
             - name: config
@@ -68,6 +68,14 @@ spec:
             initialDelaySeconds: 120
             periodSeconds: 30
             failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
       volumes:
         - name: config
           hostPath:
@@ -81,3 +89,15 @@ spec:
           hostPath:
             path: /mnt/big_storage/transcode  # ← era Memory, agora disco
             type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  selector:
+    app: jellyfin
+  ports:
+    - port: 8096
+      targetPort: 8096

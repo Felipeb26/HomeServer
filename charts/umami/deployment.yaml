@@ -13,6 +13,10 @@ spec:
       labels:
         app: umami
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.35
+          command: ["sh", "-c", "until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done"]
       containers:
         - name: umami
           image: ghcr.io/umami-software/umami:postgresql-latest
@@ -30,11 +34,27 @@ spec:
               value: "postgresql://postgres:$(DB_PASS)@postgres-shared.core.svc.cluster.local:5432/umami"
           resources:
             requests:
-              memory: 128Mi
               cpu: 50m
+              memory: 256Mi
             limits:
-              memory: 500Mi
-              cpu: 500m
+              cpu: 300m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /api/heartbeat
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/heartbeat
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
 ---
 apiVersion: v1
 kind: Service
