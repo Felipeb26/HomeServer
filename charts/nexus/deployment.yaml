@@ -74,19 +74,19 @@ spec:
               memory: 3Gi
           startupProbe:
             tcpSocket:
-              port: 8081
+              port: 5000
             failureThreshold: 120
             periodSeconds: 5
           livenessProbe:
             tcpSocket:
-              port: 8081
+              port: 5000
             initialDelaySeconds: 300
             periodSeconds: 30
             failureThreshold: 3
             timeoutSeconds: 5
           readinessProbe:
             tcpSocket:
-              port: 8081
+              port: 5000
             initialDelaySeconds: 300
             periodSeconds: 10
             failureThreshold: 2
