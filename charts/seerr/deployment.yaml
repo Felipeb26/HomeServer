@@ -22,7 +22,7 @@ spec:
               mountPath: /app/config
       containers:
         - name: seerr
-          image: ghcr.io/seerr-team/seerr:latest
+          image: ghcr.io/seerr-team/seerr:sha-8d351bc
           ports:
             - containerPort: 5055
           env:
