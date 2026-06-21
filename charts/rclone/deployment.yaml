@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: rclone
-          image: rclone/rclone:latest
+          image: rclone/rclone:sha-0aa9035
           ports:
             - containerPort: 5572
           args:
