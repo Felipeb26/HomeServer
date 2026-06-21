@@ -59,7 +59,7 @@ spec:
             - name: WEBSOCKET_ENABLED
               value: "true"
             - name: SIGNUPS_ALLOWED
-              value: "false"        # desabilitar após criar sua conta
+              value: "true"   
             - name: INVITATIONS_ALLOWED
               value: "true"
             - name: DOMAIN
