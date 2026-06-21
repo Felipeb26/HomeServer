@@ -44,7 +44,7 @@ spec:
             httpGet:
               path: /
               port: 3000
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90
             periodSeconds: 30
             failureThreshold: 3
             timeoutSeconds: 5
@@ -52,10 +52,16 @@ spec:
             httpGet:
               path: /
               port: 3000
-            initialDelaySeconds: 45
+            initialDelaySeconds: 90
             periodSeconds: 10
             failureThreshold: 2
             timeoutSeconds: 3
+          startupProbe:
+            httpGet:
+              path: /
+              port: 3000
+            failureThreshold: 30
+            periodSeconds: 5
           volumeMounts:
             - name: data
               mountPath: /opt/adguardhome/work
