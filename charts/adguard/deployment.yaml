@@ -43,7 +43,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 80
             initialDelaySeconds: 90
             periodSeconds: 30
             failureThreshold: 3
@@ -51,7 +51,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 80
             initialDelaySeconds: 90
             periodSeconds: 10
             failureThreshold: 2
@@ -59,7 +59,7 @@ spec:
           startupProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 80
             failureThreshold: 30
             periodSeconds: 5
           volumeMounts:
