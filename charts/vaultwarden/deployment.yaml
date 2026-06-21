@@ -59,7 +59,7 @@ spec:
             - name: WEBSOCKET_ENABLED
               value: "true"
             - name: SIGNUPS_ALLOWED
-              value: "true"   
+              value: "true"
             - name: INVITATIONS_ALLOWED
               value: "true"
             - name: DOMAIN
@@ -81,23 +81,19 @@ spec:
               cpu: 200m
               memory: 256Mi
           startupProbe:
-            httpGet:
-              path: /alive
+            tcpSocket:
               port: 80
             failureThreshold: 30
             periodSeconds: 5
-            timeoutSeconds: 3
           livenessProbe:
-            httpGet:
-              path: /alive
+            tcpSocket:
               port: 80
             initialDelaySeconds: 0
             periodSeconds: 30
             failureThreshold: 3
             timeoutSeconds: 5
           readinessProbe:
-            httpGet:
-              path: /alive
+            tcpSocket:
               port: 80
             initialDelaySeconds: 0
             periodSeconds: 10
