@@ -63,7 +63,7 @@ spec:
       volumes:
         - name: data
           hostPath:
-            path: /mnt/ext_ssh_bk/redis_data
+            path: /home/felpes/redis_data
             type: DirectoryOrCreate
 ---
 apiVersion: v1

@@ -1,78 +1,78 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sonarr
-  namespace: media
+    name: sonarr
+    namespace: media
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: sonarr
-  template:
-    metadata:
-      labels:
-        app: sonarr
-    spec:
-      containers:
-        - name: sonarr
-          image: linuxserver/sonarr:4.0.17
-          ports:
-            - containerPort: 8989
-          env:
-            - name: TZ
-              value: America/Sao_Paulo
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
-            - name: UMASK
-              value: "002"
-          resources:
-            requests:
-              cpu: 50m
-              memory: 256Mi
-            limits:
-              cpu: 500m
-              memory: 1Gi
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8989
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            failureThreshold: 5
-            timeoutSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8989
-            initialDelaySeconds: 15
-            periodSeconds: 10
-            failureThreshold: 3
-            timeoutSeconds: 3
-          volumeMounts:
-            - name: config
-              mountPath: /config
-            - name: data
-              mountPath: /data
-      volumes:
-        - name: config
-          hostPath:
-            path: /mnt/ext_ssh_bk/configs/sonarr
-            type: DirectoryOrCreate
-        - name: data
-          hostPath:
-            path: /mnt/big_storage/Torrent
-            type: DirectoryOrCreate
+    replicas: 1
+    selector:
+        matchLabels:
+            app: sonarr
+    template:
+        metadata:
+            labels:
+                app: sonarr
+        spec:
+            containers:
+                - name: sonarr
+                  image: linuxserver/sonarr:4.0.17
+                  ports:
+                      - containerPort: 8989
+                  env:
+                      - name: TZ
+                        value: America/Sao_Paulo
+                      - name: PUID
+                        value: "1000"
+                      - name: PGID
+                        value: "1000"
+                      - name: UMASK
+                        value: "002"
+                  resources:
+                      requests:
+                          cpu: 50m
+                          memory: 256Mi
+                      limits:
+                          cpu: 500m
+                          memory: 1Gi
+                  livenessProbe:
+                      httpGet:
+                          path: /
+                          port: 8989
+                      initialDelaySeconds: 30
+                      periodSeconds: 20
+                      failureThreshold: 5
+                      timeoutSeconds: 5
+                  readinessProbe:
+                      httpGet:
+                          path: /
+                          port: 8989
+                      initialDelaySeconds: 15
+                      periodSeconds: 10
+                      failureThreshold: 3
+                      timeoutSeconds: 3
+                  volumeMounts:
+                      - name: config
+                        mountPath: /config
+                      - name: data
+                        mountPath: /data
+            volumes:
+                - name: config
+                  hostPath:
+                      path: /mnt/seagate-2tb/arr/sonarr
+                      type: DirectoryOrCreate
+                - name: data
+                  hostPath:
+                      path: /mnt/red-wd/torrent
+                      type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
-  namespace: media
+    name: sonarr
+    namespace: media
 spec:
-  selector:
-    app: sonarr
-  ports:
-    - port: 8989
-      targetPort: 8989
+    selector:
+        app: sonarr
+    ports:
+        - port: 8989
+          targetPort: 8989

@@ -97,11 +97,11 @@ spec:
       volumes:
         - name: upload
           hostPath:
-            path: /mnt/ext_ssh_bk/immich/Gallery/immich
+            path: /mnt/red-wd/immich/data/Gallery/immich
             type: DirectoryOrCreate
         - name: library
           hostPath:
-            path: /mnt/big_storage/immich/library
+            path: /mnt/red-wd/immich/library
             type: DirectoryOrCreate
         - name: dri
           hostPath:
@@ -182,7 +182,7 @@ spec:
       volumes:
         - name: cache
           hostPath:
-            path: /mnt/ext_ssh_bk/immich/model-cache
+            path: /mnt/red-wd/immich/data/model-cache
             type: DirectoryOrCreate
 ---
 apiVersion: v1

@@ -1,6 +1,6 @@
 # storage gerenciado via hostPath direto nos deployments
 # drives disponíveis:
-# /mnt/big_storage  — HDD SATA 1.8TB — mídia e downloads
-# /mnt/storage_ext  — SSD USB 465GB  — configs e I/O frequente
-# /mnt/tank-hd      — HDD USB 465GB  — dados de aplicações
-# /mnt/ext_ssh_bk   — HDD SATA 465GB — backup e logs
+# /mnt/seagate-2tb   — HDD USB 2TB      — mídia, downloads, configs
+# /mnt/storage_ext   — SSD USB 465GB    — configs e I/O frequente
+# /mnt/red-wd        — HDD SATA 2TB     — torrents, immich, dados
+# /mnt/backup-500gb  — HDD SATA 500GB   — arquivos de backup
