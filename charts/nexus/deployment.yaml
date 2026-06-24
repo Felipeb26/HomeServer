@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-path
   hostPath:
-    path: /mnt/tank-hd/nexus
+    path: /mnt/seagate-2tb/nexus
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
