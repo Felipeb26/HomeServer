@@ -63,7 +63,7 @@ spec:
       volumes:
         - name: data
           hostPath:
-            path: /home/felpes/redis_data
+            path: /home/felipes/redis_data
             type: DirectoryOrCreate
 ---
 apiVersion: v1
