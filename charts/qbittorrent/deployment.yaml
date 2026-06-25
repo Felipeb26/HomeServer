@@ -19,10 +19,10 @@ spec:
                   ports:
                       - containerPort: 8080
                         name: webui
-                      - containerPort: 6881
+                      - containerPort: 59883
                         name: torrent-tcp
                         protocol: TCP
-                      - containerPort: 6881
+                      - containerPort: 59883
                         name: torrent-udp
                         protocol: UDP
                   env:
@@ -90,10 +90,10 @@ spec:
           port: 8080
           targetPort: 8080
         - name: torrent-tcp
-          port: 6881
-          targetPort: 6881
+          port: 59883
+          targetPort: 59883
           protocol: TCP
         - name: torrent-udp
-          port: 6881
-          targetPort: 6881
+          port: 59883
+          targetPort: 59883
           protocol: UDP
