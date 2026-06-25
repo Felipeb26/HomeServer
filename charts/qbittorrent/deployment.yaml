@@ -22,9 +22,11 @@ spec:
                       - containerPort: 59883
                         name: torrent-tcp
                         protocol: TCP
+                        hostPort: 59883
                       - containerPort: 59883
                         name: torrent-udp
                         protocol: UDP
+                        hostPort: 59883
                   env:
                       - name: TZ
                         value: America/Sao_Paulo
