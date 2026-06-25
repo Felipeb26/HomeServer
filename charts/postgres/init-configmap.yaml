@@ -11,5 +11,4 @@ data:
       CREATE DATABASE immich;
       CREATE DATABASE umami;
       CREATE DATABASE authentik;
-      CREATE DATABASE wikijs;
     EOSQL

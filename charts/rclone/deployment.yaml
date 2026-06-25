@@ -1,89 +1,89 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rclone
-  namespace: core
+    name: rclone
+    namespace: core
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: rclone
-  template:
-    metadata:
-      labels:
-        app: rclone
-    spec:
-      containers:
-        - name: rclone
-          image: rclone/rclone:sha-0aa9035
-          ports:
-            - containerPort: 5572
-          args:
-            - rcd
-            - --rc-web-gui
-            - --rc-web-gui-force-update
-            - --rc-web-gui-no-open-browser
-            - --rc-addr
-            - :5572
-            - --rc-no-auth
-            - --log-file=/logs/rclone.log
-            - --log-level
-            - INFO
-            - --transfers
-            - "6"
-            - --checkers
-            - "12"
-            - --buffer-size
-            - 64M
-            - --low-level-retries
-            - "10"
-            - --retries
-            - "5"
-            - --retries-sleep
-            - 10s
-          resources:
-            requests:
-              cpu: 50m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
-          volumeMounts:
-            - name: config
-              mountPath: /config/rclone
-            - name: logs
-              mountPath: /logs
-            - name: data
-              mountPath: /data
-            - name: cache
-              mountPath: /root/.cache/rclone
-      volumes:
-        - name: config
-          hostPath:
-            path: /mnt/tank-hd/rclone/config
-            type: DirectoryOrCreate
-        - name: logs
-          hostPath:
-            path: /mnt/tank-hd/rclone/logs
-            type: DirectoryOrCreate
-        - name: data
-          hostPath:
-            path: /mnt/big_storage/immich/library
-            type: DirectoryOrCreate
-        - name: cache
-          hostPath:
-            path: /mnt/tank-hd/rclone/cache
-            type: DirectoryOrCreate
+    replicas: 1
+    selector:
+        matchLabels:
+            app: rclone
+    template:
+        metadata:
+            labels:
+                app: rclone
+        spec:
+            containers:
+                - name: rclone
+                  image: rclone/rclone:sha-0aa9035
+                  ports:
+                      - containerPort: 5572
+                  args:
+                      - rcd
+                      - --rc-web-gui
+                      - --rc-web-gui-force-update
+                      - --rc-web-gui-no-open-browser
+                      - --rc-addr
+                      - :5572
+                      - --rc-no-auth
+                      - --log-file=/logs/rclone.log
+                      - --log-level
+                      - INFO
+                      - --transfers
+                      - "6"
+                      - --checkers
+                      - "12"
+                      - --buffer-size
+                      - 64M
+                      - --low-level-retries
+                      - "10"
+                      - --retries
+                      - "5"
+                      - --retries-sleep
+                      - 10s
+                  resources:
+                      requests:
+                          cpu: 50m
+                          memory: 128Mi
+                      limits:
+                          cpu: 500m
+                          memory: 512Mi
+                  volumeMounts:
+                      - name: config
+                        mountPath: /config/rclone
+                      - name: logs
+                        mountPath: /logs
+                      - name: data
+                        mountPath: /data
+                      - name: cache
+                        mountPath: /root/.cache/rclone
+            volumes:
+                - name: config
+                  hostPath:
+                      path: /mnt/seagate-2tb/rclone/config
+                      type: DirectoryOrCreate
+                - name: logs
+                  hostPath:
+                      path: /mnt/seagate-2tb/rclone/logs
+                      type: DirectoryOrCreate
+                - name: data
+                  hostPath:
+                      path: /mnt/red-wd/immich/library
+                      type: DirectoryOrCreate
+                - name: cache
+                  hostPath:
+                      path: /mnt/seagate-2tb/rclone/cache
+                      type: DirectoryOrCreate
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rclone
-  namespace: core
+    name: rclone
+    namespace: core
 spec:
-  selector:
-    app: rclone
-  ports:
-    - port: 5572
-      targetPort: 5572
+    selector:
+        app: rclone
+    ports:
+        - port: 5572
+          targetPort: 5572

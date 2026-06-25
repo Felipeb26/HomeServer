@@ -86,23 +86,23 @@ spec:
       volumes:
         - name: data
           hostPath:
-            path: /mnt/big_storage/fileflow/data
+            path: /mnt/seagate-2tb/fileflow/data
             type: DirectoryOrCreate
         - name: logs
           hostPath:
-            path: /mnt/big_storage/fileflow/logs
+            path: /mnt/seagate-2tb/fileflow/logs
             type: DirectoryOrCreate
         - name: common
           hostPath:
-            path: /mnt/big_storage/fileflow/common
+            path: /mnt/seagate-2tb/fileflow/common
             type: DirectoryOrCreate
         - name: media
           hostPath:
-            path: /mnt/big_storage/Torrent
+            path: /mnt/red-wd/Torrent
             type: DirectoryOrCreate
         - name: mp4
           hostPath:
-            path: /mnt/big_storage/immich/library
+            path: /mnt/red-wd/immich/library
             type: DirectoryOrCreate
         - name: temp
           hostPath:

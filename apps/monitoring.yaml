@@ -1,22 +1,3 @@
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: netdata
-#   namespace: argocd
-# spec:
-#   project: default
-#   source:
-#     repoURL: https://github.com/Felipeb26/HomeServer.git
-#     targetRevision: HEAD
-#     path: charts/netdata
-#   destination:
-#     server: https://kubernetes.default.svc
-#     namespace: monitoring
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-path
   hostPath:
-    path: /mnt/tank-hd/vaultwarden
+    path: /mnt/seagate-2tb/vaultwarden
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

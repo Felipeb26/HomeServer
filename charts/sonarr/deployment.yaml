@@ -62,7 +62,7 @@ spec:
                       type: DirectoryOrCreate
                 - name: data
                   hostPath:
-                      path: /mnt/red-wd/torrent
+                      path: /mnt/red-wd/Torrent
                       type: DirectoryOrCreate
 ---
 apiVersion: v1

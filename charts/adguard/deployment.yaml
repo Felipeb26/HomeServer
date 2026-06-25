@@ -70,11 +70,11 @@ spec:
       volumes:
         - name: data
           hostPath:
-            path: /mnt/tank-hd/adguard/work
+            path: /home/felipes/adguard/work
             type: DirectoryOrCreate
         - name: config
           hostPath:
-            path: /mnt/tank-hd/adguard/conf
+            path: /home/felipes/adguard/conf
             type: DirectoryOrCreate
 ---
 apiVersion: v1

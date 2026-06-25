@@ -54,7 +54,7 @@ spec:
       volumes:
         - name: config
           hostPath:
-            path: /mnt/ext_ssh_bk/configs/prowlarr
+            path: /mnt/seagate-2tb/arr/prowlarr
             type: DirectoryOrCreate
 ---
 apiVersion: v1

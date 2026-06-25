@@ -39,25 +39,6 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/Felipeb26/HomeServer.git
-    targetRevision: HEAD
-    path: charts/nginx
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: core
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
   name: cloudflared
   namespace: argocd
 spec:

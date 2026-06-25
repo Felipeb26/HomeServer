@@ -67,7 +67,7 @@ spec:
       volumes:
         - name: config
           hostPath:
-            path: /mnt/ext_ssh_bk/configs/seerr
+            path: /mnt/seagate-2tb/arr/seerr
             type: DirectoryOrCreate
 ---
 apiVersion: v1
