@@ -16,10 +16,10 @@ spec:
     spec:
       initContainers:
         - name: wait-for-postgres
-          image: busybox:1.35
+          image: busybox:1.38
           command: ["sh", "-c", "until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done"]
         - name: wait-for-redis
-          image: busybox:1.35
+          image: busybox:1.38
           command: ["sh", "-c", "until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done"]
       containers:
         - name: authentik
@@ -123,10 +123,10 @@ spec:
     spec:
       initContainers:
         - name: wait-for-postgres
-          image: busybox:1.35
+          image: busybox:1.38
           command: ["sh", "-c", "until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done"]
         - name: wait-for-redis
-          image: busybox:1.35
+          image: busybox:1.38
           command: ["sh", "-c", "until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done"]
       containers:
         - name: authentik

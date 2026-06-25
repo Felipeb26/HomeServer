@@ -20,10 +20,10 @@ spec:
     spec:
       initContainers:
         - name: wait-for-sonarr
-          image: busybox:1.35
+          image: busybox:1.38
           command: ["sh", "-c", "until nc -z sonarr 8989; do echo 'Aguardando sonarr...'; sleep 5; done"]
         - name: wait-for-radarr
-          image: busybox:1.35
+          image: busybox:1.38
           command: ["sh", "-c", "until nc -z radarr 7878; do echo 'Aguardando radarr...'; sleep 5; done"]
       containers:
         - name: lingarr
