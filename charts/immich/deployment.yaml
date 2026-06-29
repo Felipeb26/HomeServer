@@ -68,8 +68,8 @@ spec:
               memory: 512Mi
               nvidia.com/gpu: 1
             limits:
-              cpu: 2000m
-              memory: 2Gi
+              cpu: 4000m
+              memory: 4Gi
               nvidia.com/gpu: 1
           livenessProbe:
             httpGet:
@@ -158,7 +158,7 @@ spec:
               memory: 256Mi
             limits:
               cpu: 1000m
-              memory: 2Gi
+              memory: 4Gi
               nvidia.com/gpu: 1
           livenessProbe:
             httpGet:
