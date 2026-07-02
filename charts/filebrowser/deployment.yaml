@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filebrowser
+  namespace: media
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: filebrowser
+  template:
+    metadata:
+      labels:
+        app: filebrowser
+    spec:
+      initContainers:
+        - name: init-db
+          image: filebrowser/filebrowser:v2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              if [ ! -f /database/filebrowser.db ]; then
+                filebrowser config init --database /database/filebrowser.db --root /srv
+                filebrowser users add admin admin --database /database/filebrowser.db --perm.admin
+              fi
+          volumeMounts:
+            - name: config
+              mountPath: /database
+      containers:
+        - name: filebrowser
+          image: filebrowser/filebrowser:v2
+          args:
+            - --database=/database/filebrowser.db
+            - --root=/srv
+            - --address=0.0.0.0
+            - --port=80
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /database
+            - name: data
+              mountPath: /srv
+      volumes:
+        - name: config
+          hostPath:
+            path: /mnt/seagate-2tb/appdata/filebrowser
+            type: DirectoryOrCreate
+        - name: data
+          hostPath:
+            path: /mnt
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filebrowser
+  namespace: media
+spec:
+  selector:
+    app: filebrowser
+  ports:
+    - port: 80
+      targetPort: 80
