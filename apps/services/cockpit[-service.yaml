@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cockpit-external
+  namespace: default
+spec:
+  ports:
+    - port: 9090
+      targetPort: 9090
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: cockpit-external
+  namespace: default
+subsets:
+  - addresses:
+      - ip: 192.168.15.18
+    ports:
+      - port: 9090
