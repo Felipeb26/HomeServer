@@ -24,7 +24,7 @@ spec:
             - |
               if [ ! -f /database/filebrowser.db ]; then
                 filebrowser config init --database /database/filebrowser.db --root /srv
-                filebrowser users add admin admin --database /database/filebrowser.db --perm.admin
+                filebrowser users add admin Password@123&* --database /database/filebrowser.db --perm.admin
               fi
           volumeMounts:
             - name: config
