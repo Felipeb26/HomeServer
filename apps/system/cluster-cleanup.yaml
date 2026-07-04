@@ -77,8 +77,9 @@ data:
         done
 
     echo "--- Removendo pods em CrashLoopBackOff/Error com todos os containers travados há muito tempo (> 6h) ---"
+    cutoff_6h=$(date -u -d @$(( $(date +%s) - 6*3600 )) +%Y-%m-%dT%H:%M:%SZ)
     kubectl get pods --all-namespaces -o json \
-      | jq -r --arg cutoff "$(date -u -d '6 hours ago' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -v-6H +%Y-%m-%dT%H:%M:%SZ)" \
+      | jq -r --arg cutoff "$cutoff_6h" \
         '.items[] | select(.status.phase=="Running" or .status.phase=="Pending") | select(.status.containerStatuses != null) | select([.status.containerStatuses[]? | .state.waiting.reason=="CrashLoopBackOff" or .state.waiting.reason=="ImagePullBackOff" or .state.waiting.reason=="ErrImagePull"] | any) | select(.metadata.creationTimestamp < $cutoff) | "\(.metadata.namespace) \(.metadata.name)"' \
       | while read -r ns name; do
           [ -z "$ns" ] && continue
@@ -107,11 +108,13 @@ data:
         done
 
     echo "--- Removendo Jobs completados ha mais de 24h ---"
+    cutoff_24h=$(date -u -d @$(( $(date +%s) - 24*3600 )) +%Y-%m-%dT%H:%M:%SZ)
     kubectl get jobs --all-namespaces -o json \
-      | jq -r '.items[] | select(.status.succeeded >= 1) | "\(.metadata.namespace) \(.metadata.name) \(.status.completionTime // "")"' \
-      | while read -r ns name completion; do
-          [ -z "$ns" ] || [ -z "$completion" ] && continue
-          echo "Deletando Job completado $name (ns=$ns)"
+      | jq -r --arg cutoff "$cutoff_24h" \
+        '.items[] | select(.status.succeeded >= 1) | select((.status.completionTime // "") != "") | select(.status.completionTime < $cutoff) | "\(.metadata.namespace) \(.metadata.name)"' \
+      | while read -r ns name; do
+          [ -z "$ns" ] && continue
+          echo "Deletando Job completado ha mais de 24h: $name (ns=$ns)"
           kubectl delete job "$name" -n "$ns" --ignore-not-found=true
         done
 
