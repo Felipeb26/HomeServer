@@ -19,7 +19,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: immich-server
-          image: ghcr.io/immich-app/immich-server:release
+          image: ghcr.io/immich-app/immich-server:v3.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 2283
