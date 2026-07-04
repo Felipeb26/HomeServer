@@ -21,9 +21,9 @@ spec:
           command:
             - redis-server
             - --maxmemory
-            - 400mb
+            - 512mb
             - --maxmemory-policy
-            - allkeys-lru
+            - noeviction
             - --appendonly
             - "yes"
             - --requirepass
@@ -39,10 +39,10 @@ spec:
           resources:
             requests:
               cpu: 10m
-              memory: 64Mi
+              memory: 128Mi
             limits:
               cpu: 200m
-              memory: 256Mi
+              memory: 768Mi
           livenessProbe:
             tcpSocket:
               port: 6379
