@@ -22,3 +22,7 @@ spec:
                 name: gotify
                 port:
                   number: 80
+  tls:
+    - hosts:
+        - gotify.batsworks.com.br
+      secretName: tls-gotify
