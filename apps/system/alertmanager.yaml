@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: gotify-notifications
+  namespace: monitoring
+  labels:
+    alertmanagerConfig: gotify
+spec:
+  route:
+    groupBy: ["namespace", "alertname"]
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: gotify
+  receivers:
+    - name: gotify
+      webhookConfigs:
+        - url: "http://alertmanager-gotify-bridge.monitoring.svc.cluster.local:8080/gotify_webhook"
+          sendResolved: true
