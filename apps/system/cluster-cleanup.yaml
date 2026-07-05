@@ -49,9 +49,16 @@ data:
 
     echo "===== [$(date)] Iniciando limpeza do cluster ====="
 
+    TMP_PODS=$(mktemp)
+    TMP_DEPLOYS=$(mktemp)
+    trap 'rm -f "$TMP_PODS" "$TMP_DEPLOYS"' EXIT
+
+    # --- Uma unica listagem de pods, reutilizada em todos os filtros abaixo ---
+    echo "--- Coletando pods (uma unica chamada) ---"
+    kubectl get pods --all-namespaces -o json > "$TMP_PODS"
+
     echo "--- Removendo pods Succeeded (Completed) ---"
-    kubectl get pods --all-namespaces --field-selector=status.phase==Succeeded -o json \
-      | jq -r '.items[] | "\(.metadata.namespace) \(.metadata.name)"' \
+    jq -r '.items[] | select(.status.phase=="Succeeded") | "\(.metadata.namespace) \(.metadata.name)"' "$TMP_PODS" \
       | while read -r ns name; do
           [ -z "$ns" ] && continue
           echo "Deletando pod $name (ns=$ns)"
@@ -59,8 +66,7 @@ data:
         done
 
     echo "--- Removendo pods Failed ---"
-    kubectl get pods --all-namespaces --field-selector=status.phase==Failed -o json \
-      | jq -r '.items[] | "\(.metadata.namespace) \(.metadata.name)"' \
+    jq -r '.items[] | select(.status.phase=="Failed") | "\(.metadata.namespace) \(.metadata.name)"' "$TMP_PODS" \
       | while read -r ns name; do
           [ -z "$ns" ] && continue
           echo "Deletando pod $name (ns=$ns)"
@@ -68,22 +74,20 @@ data:
         done
 
     echo "--- Removendo pods Evicted / UnexpectedAdmissionError / NodeAffinity ---"
-    kubectl get pods --all-namespaces -o json \
-      | jq -r '.items[] | select(.status.reason=="Evicted" or .status.reason=="UnexpectedAdmissionError" or .status.reason=="NodeAffinity" or .status.reason=="OutOfpods") | "\(.metadata.namespace) \(.metadata.name)"' \
+    jq -r '.items[] | select(.status.reason=="Evicted" or .status.reason=="UnexpectedAdmissionError" or .status.reason=="NodeAffinity" or .status.reason=="OutOfpods") | "\(.metadata.namespace) \(.metadata.name)"' "$TMP_PODS" \
       | while read -r ns name; do
           [ -z "$ns" ] && continue
           echo "Deletando pod $name (ns=$ns) - motivo especial"
           kubectl delete pod "$name" -n "$ns" --ignore-not-found=true
         done
 
-    echo "--- Removendo pods em CrashLoopBackOff/Error com todos os containers travados há muito tempo (> 6h) ---"
+    echo "--- Removendo pods em CrashLoopBackOff/Error travados ha mais de 6h ---"
     cutoff_6h=$(date -u -d @$(( $(date +%s) - 6*3600 )) +%Y-%m-%dT%H:%M:%SZ)
-    kubectl get pods --all-namespaces -o json \
-      | jq -r --arg cutoff "$cutoff_6h" \
-        '.items[] | select(.status.phase=="Running" or .status.phase=="Pending") | select(.status.containerStatuses != null) | select([.status.containerStatuses[]? | .state.waiting.reason=="CrashLoopBackOff" or .state.waiting.reason=="ImagePullBackOff" or .state.waiting.reason=="ErrImagePull"] | any) | select(.metadata.creationTimestamp < $cutoff) | "\(.metadata.namespace) \(.metadata.name)"' \
+    jq -r --arg cutoff "$cutoff_6h" \
+      '.items[] | select(.status.phase=="Running" or .status.phase=="Pending") | select(.status.containerStatuses != null) | select([.status.containerStatuses[]? | .state.waiting.reason=="CrashLoopBackOff" or .state.waiting.reason=="ImagePullBackOff" or .state.waiting.reason=="ErrImagePull"] | any) | select(.metadata.creationTimestamp < $cutoff) | "\(.metadata.namespace) \(.metadata.name)"' "$TMP_PODS" \
       | while read -r ns name; do
           [ -z "$ns" ] && continue
-          echo "Deletando pod travado há mais de 6h: $name (ns=$ns)"
+          echo "Deletando pod travado ha mais de 6h: $name (ns=$ns)"
           kubectl delete pod "$name" -n "$ns" --ignore-not-found=true
         done
 
@@ -96,15 +100,23 @@ data:
           kubectl delete rs "$name" -n "$ns" --ignore-not-found=true
         done
 
+    # --- ReplicaSets orfaos: 1 chamada de deployments em vez de N chamadas ---
     echo "--- Removendo ReplicaSets orfaos (owner Deployment nao existe mais) ---"
+    kubectl get deployments --all-namespaces -o json > "$TMP_DEPLOYS"
+
     kubectl get rs --all-namespaces -o json \
-      | jq -r '.items[] | select(.metadata.ownerReferences != null) | select(.metadata.ownerReferences[0].kind=="Deployment") | "\(.metadata.namespace) \(.metadata.name) \(.metadata.ownerReferences[0].name)"' \
-      | while read -r ns name owner; do
+      | jq -r --slurpfile deploys "$TMP_DEPLOYS" '
+          ($deploys[0].items | map(.metadata.namespace + "/" + .metadata.name)) as $existing
+          | .items[]
+          | select(.metadata.ownerReferences != null)
+          | select(.metadata.ownerReferences[0].kind=="Deployment")
+          | select(([.metadata.namespace + "/" + .metadata.ownerReferences[0].name] | inside($existing)) | not)
+          | "\(.metadata.namespace) \(.metadata.name)"
+        ' \
+      | while read -r ns name; do
           [ -z "$ns" ] && continue
-          if ! kubectl get deployment "$owner" -n "$ns" >/dev/null 2>&1; then
-            echo "Deletando ReplicaSet orfao $name (ns=$ns, owner ausente: $owner)"
-            kubectl delete rs "$name" -n "$ns" --ignore-not-found=true
-          fi
+          echo "Deletando ReplicaSet orfao $name (ns=$ns)"
+          kubectl delete rs "$name" -n "$ns" --ignore-not-found=true
         done
 
     echo "--- Removendo Jobs completados ha mais de 24h ---"
@@ -129,11 +141,11 @@ spec:
   schedule: "0 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
   jobTemplate:
     spec:
       backoffLimit: 1
-      activeDeadlineSeconds: 600
+      activeDeadlineSeconds: 1800
       template:
         spec:
           serviceAccountName: cluster-cleanup
@@ -147,11 +159,11 @@ spec:
                   mountPath: /scripts
               resources:
                 requests:
-                  cpu: 50m
-                  memory: 64Mi
-                limits:
-                  cpu: 200m
+                  cpu: 100m
                   memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
           volumes:
             - name: script
               configMap:
