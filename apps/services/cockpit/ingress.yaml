@@ -21,4 +21,4 @@ spec:
   tls:
     - hosts:
         - cockpit.batsworks.com.br
-      secretName: cockpit-tls-secret
+      secretName: tls-cockpit
