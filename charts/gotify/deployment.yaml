@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gotify-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-path
+  hostPath:
+    path: /mnt/seagate-2tb/gotify
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gotify-pvc
+  namespace: core
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  volumeName: gotify-pv
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gotify
+  namespace: core
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gotify
+  template:
+    metadata:
+      labels:
+        app: gotify
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: gotify
+          image: gotify/server:2.6.3
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: GOTIFY_DEFAULTUSER_NAME
+              value: "admin"
+            - name: GOTIFY_DEFAULTUSER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-secret
+                  key: admin-password
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          startupProbe:
+            tcpSocket:
+              port: 80
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: gotify-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gotify
+  namespace: core
+spec:
+  selector:
+    app: gotify
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
