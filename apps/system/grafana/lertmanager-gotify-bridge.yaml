@@ -1,0 +1,83 @@
+# 2) ALERTMANAGER GOTIFY BRIDGE
+#
+# Este manifesto assume que voce JA TEM um Gotify rodando no namespace
+# "core" (service "gotify", porta 80) - nao recria o Gotify.
+#
+# Pre-requisito: ja ter criado uma Application no seu Gotify existente
+# (na UI: Apps -> Create Application, ex: nome "alertmanager") e copiado
+# o token gerado.
+#
+# Se houver NetworkPolicy restringindo trafego entre namespaces, libere
+# o namespace "monitoring" -> "core" na porta 80 antes de testar.
+#
+# Antes de aplicar, substitua SEU_TOKEN_AQUI pelo token real, ou crie o Secret
+# manualmente via linha de comando (mais seguro, evita token no arquivo):
+#
+#   kubectl create secret generic gotify-bridge-token \
+#     --namespace monitoring \
+#     --from-literal=GOTIFY_TOKEN='SEU_TOKEN_AQUI'
+#
+# Se criar o secret via linha de comando, remova/comente o bloco "Secret" abaixo.
+
+# Crie o secret ANTES de aplicar este arquivo:
+#   kubectl create secret generic gotify-bridge-token -n monitoring \
+#     --from-literal=GOTIFY_TOKEN='<token-copiado-do-gotify>'
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager-gotify-bridge
+  namespace: monitoring
+  labels:
+    app: alertmanager-gotify-bridge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager-gotify-bridge
+  template:
+    metadata:
+      labels:
+        app: alertmanager-gotify-bridge
+    spec:
+      containers:
+        - name: bridge
+          image: ghcr.io/druggeri/alertmanager_gotify_bridge:master
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: GOTIFY_ENDPOINT
+              value: "http://gotify.core.svc.cluster.local/message"
+            - name: GOTIFY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-bridge-token
+                  key: GOTIFY_TOKEN
+            - name: DEFAULT_PRIORITY
+              value: "5"
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-gotify-bridge
+  namespace: monitoring
+spec:
+  selector:
+    app: alertmanager-gotify-bridge
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
