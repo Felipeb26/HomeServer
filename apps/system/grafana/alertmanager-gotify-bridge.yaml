@@ -1,28 +1,3 @@
-# 2) ALERTMANAGER GOTIFY BRIDGE
-#
-# Este manifesto assume que voce JA TEM um Gotify rodando no namespace
-# "core" (service "gotify", porta 80) - nao recria o Gotify.
-#
-# Pre-requisito: ja ter criado uma Application no seu Gotify existente
-# (na UI: Apps -> Create Application, ex: nome "alertmanager") e copiado
-# o token gerado.
-#
-# Se houver NetworkPolicy restringindo trafego entre namespaces, libere
-# o namespace "monitoring" -> "core" na porta 80 antes de testar.
-#
-# Antes de aplicar, substitua SEU_TOKEN_AQUI pelo token real, ou crie o Secret
-# manualmente via linha de comando (mais seguro, evita token no arquivo):
-#
-#   kubectl create secret generic gotify-bridge-token \
-#     --namespace monitoring \
-#     --from-literal=GOTIFY_TOKEN='SEU_TOKEN_AQUI'
-#
-# Se criar o secret via linha de comando, remova/comente o bloco "Secret" abaixo.
-
-# Crie o secret ANTES de aplicar este arquivo:
-#   kubectl create secret generic gotify-bridge-token -n monitoring \
-#     --from-literal=GOTIFY_TOKEN='<token-copiado-do-gotify>'
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
