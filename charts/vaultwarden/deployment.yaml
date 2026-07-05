@@ -60,7 +60,7 @@ spec:
             - name: WEBSOCKET_ENABLED
               value: "true"
             - name: SIGNUPS_ALLOWED
-              value: "false"
+              value: "true"
             - name: INVITATIONS_ALLOWED
               value: "true"
             - name: DOMAIN
