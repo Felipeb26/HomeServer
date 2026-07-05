@@ -22,3 +22,7 @@ spec:
                 name: filebrowser
                 port:
                   number: 80
+  tls:
+    - hosts:
+        - files.batsworks.com.br
+      secretName: tls-filebrowser
