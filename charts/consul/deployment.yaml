@@ -26,7 +26,6 @@ stringData:
         }
       }
     }
-    # TODO: rotacionar este token e mover para sealed-secrets/sops (estava em texto plano no manifest)
 ---
 apiVersion: apps/v1
 kind: Deployment
