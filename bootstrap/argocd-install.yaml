@@ -8,8 +8,6 @@ kind: Application
 metadata:
   name: argocd
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   source:
@@ -18,6 +16,14 @@ spec:
     targetRevision: "10.1.2"
     helm:
       values: |
+        controller:
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
         server:
           extraArgs:
             - --insecure
@@ -25,9 +31,7 @@ spec:
           params:
             server.insecure: true
           cm:
-            # Ignora diferenças em campos .status dos recursos Kubernetes.
-            # Evita erros como:
-            # ".status.terminatingReplicas: field not declared in schema"
+            url: ""
             resource.compareoptions: |
               ignoreResourceStatusField: all
   destination:
@@ -37,6 +41,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true
