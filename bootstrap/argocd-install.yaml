@@ -26,7 +26,7 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
-        controller:
+        applicationController:
           resources:
             requests:
               cpu: 100m
@@ -34,9 +34,6 @@ spec:
             limits:
               cpu: "1"
               memory: 2Gi
-          env:
-            - name: ARGOCD_CONTROLLER_REPLICAS
-              value: "1"
         repoServer:
           resources:
             requests:
