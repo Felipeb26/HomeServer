@@ -13,25 +13,44 @@ spec:
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: "10.1.2"
+    targetRevision: "10.*"
     helm:
       values: |
-        controller:
-          resources:
-            requests:
-              cpu: 250m
-              memory: 1Gi
-            limits:
-              cpu: 1000m
-              memory: 2Gi
         server:
           extraArgs:
             - --insecure
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+        controller:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          env:
+            - name: ARGOCD_CONTROLLER_REPLICAS
+              value: "1"
+        repoServer:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
         configs:
           params:
             server.insecure: true
+            controller.status.processors: "10"
+            controller.operation.processors: "5"
           cm:
-            url: ""
             resource.compareoptions: |
               ignoreResourceStatusField: all
   destination:
