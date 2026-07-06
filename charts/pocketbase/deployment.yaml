@@ -1,66 +1,66 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: pocketbase
-    namespace: core
+  name: pocketbase
+  namespace: core
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: pocketbase
-    template:
-        metadata:
-            labels:
-                app: pocketbase
-        spec:
-            containers:
-                - name: pocketbase
-                  image: ghcr.io/muchobien/pocketbase:0.39.5
-                  ports:
-                      - containerPort: 8090
-                  env:
-                      - name: TZ
-                        value: America/Sao_Paulo
-                  resources:
-                      requests:
-                          cpu: 10m
-                          memory: 64Mi
-                      limits:
-                          cpu: 150m
-                          memory: 128Mi
-                  livenessProbe:
-                      httpGet:
-                          path: /api/health
-                          port: 8090
-                      initialDelaySeconds: 30
-                      periodSeconds: 20
-                      failureThreshold: 5
-                      timeoutSeconds: 5
-                  readinessProbe:
-                      httpGet:
-                          path: /api/health
-                          port: 8090
-                      initialDelaySeconds: 15
-                      periodSeconds: 10
-                      failureThreshold: 3
-                      timeoutSeconds: 3
-                  volumeMounts:
-                      - name: data
-                        mountPath: /pb_data
-            volumes:
-                - name: data
-                  hostPath:
-                      path: /mnt/seagate-2tb/pocketbase
-                      type: DirectoryOrCreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pocketbase
+  template:
+    metadata:
+      labels:
+        app: pocketbase
+    spec:
+      containers:
+        - name: pocketbase
+          image: ghcr.io/muchobien/pocketbase:0.39.5
+          ports:
+            - containerPort: 8090
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 150m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8090
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8090
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: data
+              mountPath: /pb_data
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/seagate-2tb/pocketbase
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: pocketbase
-    namespace: core
+  name: pocketbase
+  namespace: core
 spec:
-    selector:
-        app: pocketbase
-    ports:
-        - port: 8090
-          targetPort: 8090
+  selector:
+    app: pocketbase
+  ports:
+    - port: 8090
+      targetPort: 8090

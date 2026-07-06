@@ -14,15 +14,31 @@ kind: ClusterRole
 metadata:
   name: cluster-cleanup
 rules:
-  - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["get", "list", "delete"]
-  - apiGroups: ["apps"]
-    resources: ["replicasets", "deployments"]
-    verbs: ["get", "list", "delete"]
-  - apiGroups: ["batch"]
-    resources: ["jobs"]
-    verbs: ["get", "list", "delete"]
+  - apiGroups:
+      - ''
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - delete
+  - apiGroups:
+      - apps
+    resources:
+      - replicasets
+      - deployments
+    verbs:
+      - get
+      - list
+      - delete
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+    verbs:
+      - get
+      - list
+      - delete
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -138,7 +154,7 @@ metadata:
   name: cluster-cleanup
   namespace: cluster-tools
 spec:
-  schedule: "0 * * * *"
+  schedule: 0 * * * *
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 5
@@ -153,7 +169,9 @@ spec:
           containers:
             - name: cleanup
               image: alpine/k8s:1.30.2
-              command: ["/bin/sh", "/scripts/cleanup.sh"]
+              command:
+                - /bin/sh
+                - /scripts/cleanup.sh
               volumeMounts:
                 - name: script
                   mountPath: /scripts
@@ -168,4 +186,4 @@ spec:
             - name: script
               configMap:
                 name: cluster-cleanup-script
-                defaultMode: 0755
+                defaultMode: 493

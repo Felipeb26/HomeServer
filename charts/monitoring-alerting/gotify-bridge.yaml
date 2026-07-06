@@ -23,7 +23,7 @@ spec:
               name: http
           env:
             - name: GOTIFY_ENDPOINT
-              value: "http://gotify.core.svc.cluster.local/message"
+              value: http://gotify.core.svc.cluster.local/message
             - name: GOTIFY_TOKEN
               valueFrom:
                 secretKeyRef:

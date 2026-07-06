@@ -13,7 +13,10 @@ spec:
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: "6.7.3"
+    # "*" = sempre resolve pra ultima versao estavel publicada no repo helm.
+    # ArgoCD faz cache do index (24h por padrao) - hard refresh na UI/CLI forca pegar na hora.
+    # risco: upgrades major podem trazer breaking changes sem aviso previo no git.
+    targetRevision: "*"
     helm:
       values: |
         server:
@@ -22,6 +25,12 @@ spec:
         configs:
           params:
             server.insecure: true
+          cm:
+            # ignora diff de qualquer campo .status em qualquer recurso - evita
+            # ComparisonError tipo "ipMode"/"terminatingReplicas": field not declared in schema
+            # quando o schema do argocd fica atras da versao do k8s do cluster.
+            resource.compareoptions: |
+              ignoreResourceStatusField: all
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

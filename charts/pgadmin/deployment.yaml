@@ -1,114 +1,113 @@
----
 apiVersion: v1
 kind: Secret
 metadata:
-    name: pgadmin-secret
-    namespace: monitoring
+  name: pgadmin-secret
+  namespace: monitoring
 type: Opaque
 stringData:
-    PGADMIN_DEFAULT_EMAIL: "felipe.batista.silva@batsworks.com.br"
-    PGADMIN_DEFAULT_PASSWORD: "CHANGEME"
+  PGADMIN_DEFAULT_EMAIL: felipe.batista.silva@batsworks.com.br
+  PGADMIN_DEFAULT_PASSWORD: CHANGEME
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-    name: pgadmin-pv
+  name: pgadmin-pv
 spec:
-    capacity:
-        storage: 1Gi
-    accessModes:
-        - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
-    storageClassName: ""
-    hostPath:
-        path: /mnt/seagate-2tb/pgadmin
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ''
+  hostPath:
+    path: /mnt/seagate-2tb/pgadmin
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: pgadmin-pvc
-    namespace: monitoring
+  name: pgadmin-pvc
+  namespace: monitoring
 spec:
-    accessModes:
-        - ReadWriteOnce
-    resources:
-        requests:
-            storage: 1Gi
-    storageClassName: ""
-    volumeName: pgadmin-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ''
+  volumeName: pgadmin-pv
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: pgadmin
-    namespace: monitoring
-    labels:
-        app: pgadmin
+  name: pgadmin
+  namespace: monitoring
+  labels:
+    app: pgadmin
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: pgadmin
-    strategy:
-        type: Recreate
-        rollingUpdate: null
-    template:
-        metadata:
-            labels:
-                app: pgadmin
-        spec:
-            securityContext:
-                runAsUser: 5050
-                runAsGroup: 5050
-                fsGroup: 5050
-            containers:
-                - name: pgadmin
-                  image: dpage/pgadmin4:9.16
-                  ports:
-                      - containerPort: 80
-                  envFrom:
-                      - secretRef:
-                            name: pgadmin-secret
-                  resources:
-                      requests:
-                          cpu: 50m
-                          memory: 256Mi
-                      limits:
-                          cpu: 500m
-                          memory: 768Mi
-                  livenessProbe:
-                      httpGet:
-                          path: /misc/ping
-                          port: 80
-                      initialDelaySeconds: 60
-                      periodSeconds: 20
-                      failureThreshold: 5
-                      timeoutSeconds: 5
-                  readinessProbe:
-                      httpGet:
-                          path: /misc/ping
-                          port: 80
-                      initialDelaySeconds: 30
-                      periodSeconds: 10
-                      failureThreshold: 3
-                      timeoutSeconds: 3
-                  volumeMounts:
-                      - name: data
-                        mountPath: /var/lib/pgadmin
-            volumes:
-                - name: data
-                  persistentVolumeClaim:
-                      claimName: pgadmin-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  strategy:
+    type: Recreate
+    rollingUpdate: null
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+    spec:
+      securityContext:
+        runAsUser: 5050
+        runAsGroup: 5050
+        fsGroup: 5050
+      containers:
+        - name: pgadmin
+          image: dpage/pgadmin4:9.16
+          ports:
+            - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: pgadmin-secret
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          livenessProbe:
+            httpGet:
+              path: /misc/ping
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /misc/ping
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/pgadmin
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: pgadmin-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: pgadmin
-    namespace: monitoring
+  name: pgadmin
+  namespace: monitoring
 spec:
-    selector:
-        app: pgadmin
-    ports:
-        - name: http
-          port: 80
-          targetPort: 80
+  selector:
+    app: pgadmin
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

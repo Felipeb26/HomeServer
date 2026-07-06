@@ -1,3 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: filebrowser-secret
+  namespace: media
+type: Opaque
+stringData:
+  admin-password: CHANGEME
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,13 +28,21 @@ spec:
       initContainers:
         - name: init-db
           image: filebrowser/filebrowser:v2
-          command: ["/bin/sh", "-c"]
+          command:
+            - /bin/sh
+            - -c
           args:
             - |
               if [ ! -f /database/filebrowser.db ]; then
                 filebrowser config init --database /database/filebrowser.db --root /srv
-                filebrowser users add admin Password@123&* --database /database/filebrowser.db --perm.admin
+                filebrowser users add admin "$FB_ADMIN_PASSWORD" --database /database/filebrowser.db --perm.admin
               fi
+          env:
+            - name: FB_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: filebrowser-secret
+                  key: admin-password
           volumeMounts:
             - name: config
               mountPath: /database

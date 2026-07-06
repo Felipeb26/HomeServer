@@ -1,99 +1,112 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: consul-secret
+  namespace: development
+type: Opaque
+stringData:
+  CONSUL_LOCAL_CONFIG: |
+    {
+      "datacenter": "dc1",
+      "data_dir": "/consul/data",
+      "log_level": "INFO",
+      "node_name": "server-prod",
+      "server": true,
+      "bootstrap_expect": 1,
+      "ui_config": { "enabled": true },
+      "client_addr": "0.0.0.0",
+      "performance": { "raft_multiplier": 3 },
+      "acl": {
+        "enabled": true,
+        "default_policy": "deny",
+        "enable_token_persistence": true,
+        "tokens": {
+          "initial_management": "2f85162c-2d84-b4ea-4332-386d6e50c2fb",
+          "agent": "2f85162c-2d84-b4ea-4332-386d6e50c2fb"
+        }
+      }
+    }
+    # TODO: rotacionar este token e mover para sealed-secrets/sops (estava em texto plano no manifest)
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: consul
-    namespace: development
+  name: consul
+  namespace: development
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: consul
-    template:
-        metadata:
-            labels:
-                app: consul
-        spec:
-            containers:
-                - name: consul
-                  image: hashicorp/consul:2.0
-                  ports:
-                      - containerPort: 8500
-                        name: http
-                      - containerPort: 8600
-                        name: dns
-                        protocol: UDP
-                  env:
-                      - name: TZ
-                        value: America/Sao_Paulo
-                      - name: GOGC
-                        value: "80"
-                      - name: CONSUL_LOCAL_CONFIG
-                        value: |
-                            {
-                              "datacenter": "dc1",
-                              "data_dir": "/consul/data",
-                              "log_level": "INFO",
-                              "node_name": "server-prod",
-                              "server": true,
-                              "bootstrap_expect": 1,
-                              "ui_config": { "enabled": true },
-                              "client_addr": "0.0.0.0",
-                              "performance": { "raft_multiplier": 3 },
-                              "acl": {
-                                "enabled": true,
-                                "default_policy": "deny",
-                                "enable_token_persistence": true,
-                                "tokens": {
-                                  "initial_management": "2f85162c-2d84-b4ea-4332-386d6e50c2fb",
-                                  "agent": "2f85162c-2d84-b4ea-4332-386d6e50c2fb"
-                                }
-                              }
-                            }
-                  resources:
-                      requests:
-                          cpu: 50m
-                          memory: 128Mi
-                      limits:
-                          cpu: 300m
-                          memory: 512Mi
-                  livenessProbe:
-                      httpGet:
-                          path: /v1/status/leader
-                          port: 8500
-                      initialDelaySeconds: 30
-                      periodSeconds: 20
-                      failureThreshold: 5
-                      timeoutSeconds: 5
-                  readinessProbe:
-                      httpGet:
-                          path: /v1/status/leader
-                          port: 8500
-                      initialDelaySeconds: 15
-                      periodSeconds: 10
-                      failureThreshold: 3
-                      timeoutSeconds: 3
-                  volumeMounts:
-                      - name: data
-                        mountPath: /consul/data
-            volumes:
-                - name: data
-                  hostPath:
-                      path: /mnt/seagate-2tb/consul
-                      type: DirectoryOrCreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consul
+  template:
+    metadata:
+      labels:
+        app: consul
+    spec:
+      containers:
+        - name: consul
+          image: hashicorp/consul:1.21.2
+          ports:
+            - containerPort: 8500
+              name: http
+            - containerPort: 8600
+              name: dns
+              protocol: UDP
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: GOGC
+              value: "80"
+            - name: CONSUL_LOCAL_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: consul-secret
+                  key: CONSUL_LOCAL_CONFIG
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: 8500
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: 8500
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: data
+              mountPath: /consul/data
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/seagate-2tb/consul
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: consul
-    namespace: development
+  name: consul
+  namespace: development
 spec:
-    selector:
-        app: consul
-    ports:
-        - name: http
-          port: 8500
-          targetPort: 8500
-        - name: dns
-          port: 8600
-          targetPort: 8600
-          protocol: UDP
+  selector:
+    app: consul
+  ports:
+    - name: http
+      port: 8500
+      targetPort: 8500
+    - name: dns
+      port: 8600
+      targetPort: 8600
+      protocol: UDP

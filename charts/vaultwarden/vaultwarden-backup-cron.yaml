@@ -4,7 +4,7 @@ metadata:
   name: vaultwarden-backup
   namespace: security
 spec:
-  schedule: "0 3 * * *"   # todo dia às 3h da manhã
+  schedule: 0 3 * * *
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3

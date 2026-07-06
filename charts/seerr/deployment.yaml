@@ -16,7 +16,10 @@ spec:
       initContainers:
         - name: init
           image: busybox
-          command: ['sh', '-c', 'chown -R 1000:1000 /app/config']
+          command:
+            - sh
+            - -c
+            - chown -R 1000:1000 /app/config
           volumeMounts:
             - name: config
               mountPath: /app/config
@@ -43,19 +46,19 @@ spec:
             httpGet:
               path: /api/v1/status
               port: 5055
-            initialDelaySeconds: 60   
-            timeoutSeconds: 10        
-            periodSeconds: 30        
+            initialDelaySeconds: 60
+            timeoutSeconds: 10
+            periodSeconds: 30
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /api/v1/status
               port: 5055
-            initialDelaySeconds: 30  
-            timeoutSeconds: 5      
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
             periodSeconds: 10
-            failureThreshold: 6       
-          startupProbe:             
+            failureThreshold: 6
+          startupProbe:
             httpGet:
               path: /api/v1/status
               port: 5055

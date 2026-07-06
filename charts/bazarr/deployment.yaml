@@ -1,76 +1,76 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: bazarr
-    namespace: media
+  name: bazarr
+  namespace: media
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: bazarr
-    template:
-        metadata:
-            labels:
-                app: bazarr
-        spec:
-            containers:
-                - name: bazarr
-                  image: lscr.io/linuxserver/bazarr:1.5.6
-                  ports:
-                      - containerPort: 6767
-                  env:
-                      - name: TZ
-                        value: America/Sao_Paulo
-                      - name: PUID
-                        value: "1000"
-                      - name: PGID
-                        value: "1000"
-                  resources:
-                      requests:
-                          cpu: 50m
-                          memory: 256Mi
-                      limits:
-                          cpu: 300m
-                          memory: 512Mi
-                  livenessProbe:
-                      httpGet:
-                          path: /
-                          port: 6767
-                      initialDelaySeconds: 30
-                      periodSeconds: 20
-                      failureThreshold: 5
-                      timeoutSeconds: 5
-                  readinessProbe:
-                      httpGet:
-                          path: /
-                          port: 6767
-                      initialDelaySeconds: 15
-                      periodSeconds: 10
-                      failureThreshold: 3
-                      timeoutSeconds: 3
-                  volumeMounts:
-                      - name: config
-                        mountPath: /config
-                      - name: data
-                        mountPath: /data
-            volumes:
-                - name: config
-                  hostPath:
-                      path: /mnt/seagate-2tb/arr/bazarr
-                      type: DirectoryOrCreate
-                - name: data
-                  hostPath:
-                      path: /mnt/red-wd/Torrent
-                      type: DirectoryOrCreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bazarr
+  template:
+    metadata:
+      labels:
+        app: bazarr
+    spec:
+      containers:
+        - name: bazarr
+          image: lscr.io/linuxserver/bazarr:1.5.6
+          ports:
+            - containerPort: 6767
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 6767
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6767
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: config
+          hostPath:
+            path: /mnt/seagate-2tb/arr/bazarr
+            type: DirectoryOrCreate
+        - name: data
+          hostPath:
+            path: /mnt/red-wd/Torrent
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: bazarr
-    namespace: media
+  name: bazarr
+  namespace: media
 spec:
-    selector:
-        app: bazarr
-    ports:
-        - port: 6767
-          targetPort: 6767
+  selector:
+    app: bazarr
+  ports:
+    - port: 6767
+      targetPort: 6767

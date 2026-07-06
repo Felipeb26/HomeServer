@@ -52,9 +52,9 @@ spec:
             runAsNonRoot: true
           env:
             - name: INSTALL4J_ADD_VM_PARAMS
-              value: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=2g"
+              value: -Xms1g -Xmx1g -XX:MaxDirectMemorySize=2g
             - name: JAVA_OPTS
-              value: "-Djetty.http.forwarded=true -Djava.util.prefs.userRoot=/nexus-data/javaprefs"
+              value: -Djetty.http.forwarded=true -Djava.util.prefs.userRoot=/nexus-data/javaprefs
           ports:
             - name: ui
               containerPort: 8081
@@ -76,19 +76,17 @@ spec:
             httpGet:
               path: /service/rest/v1/status
               port: 8081
-            failureThreshold: 60    # 60 × 10s = 10 minutos para subir
+            failureThreshold: 60
             periodSeconds: 10
             timeoutSeconds: 5
-
           livenessProbe:
             httpGet:
               path: /service/rest/v1/status
               port: 8081
-            initialDelaySeconds: 0   # startupProbe já garantiu que subiu
+            initialDelaySeconds: 0
             periodSeconds: 30
             failureThreshold: 3
             timeoutSeconds: 5
-
           readinessProbe:
             httpGet:
               path: /service/rest/v1/status

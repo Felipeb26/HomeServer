@@ -14,7 +14,7 @@ spec:
     - hosts:
         - nexus.batsworks.com.br
         - registry.batsworks.com.br
-      secretName: nexus-tls
+      secretName: tls-nexus
   rules:
     - host: nexus.batsworks.com.br
       http:

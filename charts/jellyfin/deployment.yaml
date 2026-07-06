@@ -1,103 +1,91 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: jellyfin
-    namespace: media
+  name: jellyfin
+  namespace: media
 spec:
-    replicas: 1
-    strategy:
-        type: Recreate
-    selector:
-        matchLabels:
-            app: jellyfin
-    template:
-        metadata:
-            labels:
-                app: jellyfin
-        spec:
-            hostNetwork: true # adiciona
-            dnsPolicy: ClusterFirstWithHostNet
-            securityContext:
-                supplementalGroups:
-                    - 992
-                    - 44
-            runtimeClassName: nvidia
-            containers:
-                - name: jellyfin
-                  image: linuxserver/jellyfin:10.11.11
-                  ports:
-                      - containerPort: 8096
-                  env:
-                      - name: TZ
-                        value: America/Sao_Paulo
-                      - name: PUID
-                        value: "1000"
-                      - name: PGID
-                        value: "1000"
-                      - name: JELLYFIN_FFmpeg__HardwareAccelerationType
-                        value: nvenc
-                      - name: NVIDIA_VISIBLE_DEVICES
-                        value: all
-                      - name: NVIDIA_DRIVER_CAPABILITIES
-                        value: compute,video,utility
-                  resources:
-                      requests:
-                          cpu: 100m
-                          memory: 512Mi
-                      limits:
-                          cpu: 2000m
-                          memory: 3Gi
-                          nvidia.com/gpu: 1
-                  volumeMounts:
-                      - name: config
-                        mountPath: /config
-                      - name: data
-                        mountPath: /data
-                      - name: transcode
-                        mountPath: /transcode
-                  startupProbe:
-                      httpGet:
-                          path: /health
-                          port: 8096
-                      failureThreshold: 60
-                      periodSeconds: 10
-                  livenessProbe:
-                      httpGet:
-                          path: /health
-                          port: 8096
-                      initialDelaySeconds: 120
-                      periodSeconds: 30
-                      failureThreshold: 5
-                  readinessProbe:
-                      httpGet:
-                          path: /health
-                          port: 8096
-                      initialDelaySeconds: 60
-                      periodSeconds: 10
-                      failureThreshold: 3
-                      timeoutSeconds: 3
-            volumes:
-                - name: config
-                  hostPath:
-                      path: /mnt/seagate-2tb/arr/jellyfin
-                      type: DirectoryOrCreate
-                - name: data
-                  hostPath:
-                      path: /mnt/red-wd/Torrent
-                      type: DirectoryOrCreate
-                - name: transcode
-                  hostPath:
-                      path: /mnt/seagate-2tb/transcode
-                      type: DirectoryOrCreate
----
-apiVersion: v1
-kind: Service
-metadata:
-    name: jellyfin
-    namespace: media
-spec:
-    selector:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
         app: jellyfin
-    ports:
-        - port: 8096
-          targetPort: 8096
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      securityContext:
+        supplementalGroups:
+          - 992
+          - 44
+      runtimeClassName: nvidia
+      containers:
+        - name: jellyfin
+          image: linuxserver/jellyfin:10.11.11
+          ports:
+            - containerPort: 8096
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: JELLYFIN_FFmpeg__HardwareAccelerationType
+              value: nvenc
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: compute,video,utility
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 3Gi
+              nvidia.com/gpu: 1
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+            - name: transcode
+              mountPath: /transcode
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            failureThreshold: 60
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+      volumes:
+        - name: config
+          hostPath:
+            path: /mnt/seagate-2tb/arr/jellyfin
+            type: DirectoryOrCreate
+        - name: data
+          hostPath:
+            path: /mnt/red-wd/Torrent
+            type: DirectoryOrCreate
+        - name: transcode
+          hostPath:
+            path: /mnt/seagate-2tb/transcode
+            type: DirectoryOrCreate

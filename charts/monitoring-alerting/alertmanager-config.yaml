@@ -7,7 +7,9 @@ metadata:
     alertmanagerConfig: gotify
 spec:
   route:
-    groupBy: ["namespace", "alertname"]
+    groupBy:
+      - namespace
+      - alertname
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 12h
@@ -15,5 +17,5 @@ spec:
   receivers:
     - name: gotify
       webhookConfigs:
-        - url: "http://alertmanager-gotify-bridge.monitoring.svc.cluster.local:8080/gotify_webhook"
+        - url: http://alertmanager-gotify-bridge.monitoring.svc.cluster.local:8080/gotify_webhook
           sendResolved: true

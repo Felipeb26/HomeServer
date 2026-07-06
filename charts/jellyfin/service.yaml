@@ -8,6 +8,6 @@ spec:
   selector:
     app: jellyfin
   ports:
-    - port: 8096       # Porta interna do Cluster
-      targetPort: 8096 # Porta no Container
-      nodePort: 30096  # Porta externa (Acesso via IP)
+    - port: 8096
+      targetPort: 8096
+      nodePort: 30096

@@ -59,7 +59,7 @@ spec:
               port: 5000
             initialDelaySeconds: 10
             periodSeconds: 15
-            failureThreshold: 3    
+            failureThreshold: 3
           volumeMounts:
             - name: data
               mountPath: /app/Data

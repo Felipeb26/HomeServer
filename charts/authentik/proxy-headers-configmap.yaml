@@ -4,6 +4,6 @@ metadata:
   name: authentik-proxy-headers
   namespace: security
 data:
-  X-Forwarded-Proto: "https"
-  X-Forwarded-Host: "authentik.batsworks.com.br"
+  X-Forwarded-Proto: https
+  X-Forwarded-Host: authentik.batsworks.com.br
   X-Forwarded-Port: "443"

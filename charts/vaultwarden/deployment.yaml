@@ -64,9 +64,9 @@ spec:
             - name: INVITATIONS_ALLOWED
               value: "true"
             - name: DOMAIN
-              value: "https://vault.batsworks.com.br"
+              value: https://vault.batsworks.com.br
             - name: LOG_LEVEL
-              value: "warn"
+              value: warn
             - name: SHOW_PASSWORD_HINT
               value: "false"
             - name: ADMIN_TOKEN

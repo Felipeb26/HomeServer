@@ -4,7 +4,7 @@ metadata:
   name: postgres-init
   namespace: core
 data:
-  init-databases.sh: |
+  init-databases.sh: |-
     #!/bin/bash
     set -e
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL

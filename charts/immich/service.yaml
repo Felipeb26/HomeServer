@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-server
+  namespace: immich
+spec:
+  type: NodePort
+  selector:
+    app: immich-server
+  ports:
+    - port: 2283       # Porta interna do Cluster
+      targetPort: 2283 # Porta no Container
+      nodePort: 30283  # Porta externa (acesso via IP)

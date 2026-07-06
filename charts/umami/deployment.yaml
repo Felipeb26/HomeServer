@@ -16,7 +16,10 @@ spec:
       initContainers:
         - name: wait-for-postgres
           image: busybox:1.38
-          command: ["sh", "-c", "until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done"]
+          command:
+            - sh
+            - -c
+            - until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done
       containers:
         - name: umami
           image: ghcr.io/umami-software/umami:postgresql-latest
@@ -31,7 +34,7 @@ spec:
                   name: postgres-secret
                   key: password
             - name: DATABASE_URL
-              value: "postgresql://postgres:$(DB_PASS)@postgres-shared.core.svc.cluster.local:5432/umami"
+              value: postgresql://postgres:$(DB_PASS)@postgres-shared.core.svc.cluster.local:5432/umami
           resources:
             requests:
               cpu: 50m

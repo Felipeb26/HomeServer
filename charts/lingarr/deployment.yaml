@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,10 +20,16 @@ spec:
       initContainers:
         - name: wait-for-sonarr
           image: busybox:1.38
-          command: ["sh", "-c", "until nc -z sonarr 8989; do echo 'Aguardando sonarr...'; sleep 5; done"]
+          command:
+            - sh
+            - -c
+            - until nc -z sonarr 8989; do echo 'Aguardando sonarr...'; sleep 5; done
         - name: wait-for-radarr
           image: busybox:1.38
-          command: ["sh", "-c", "until nc -z radarr 7878; do echo 'Aguardando radarr...'; sleep 5; done"]
+          command:
+            - sh
+            - -c
+            - until nc -z radarr 7878; do echo 'Aguardando radarr...'; sleep 5; done
       containers:
         - name: lingarr
           image: lingarr/lingarr:main

@@ -1,224 +1,216 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: authentik-server
-    namespace: security
+  name: authentik-server
+  namespace: security
 spec:
-    replicas: 1
-    revisionHistoryLimit: 1
-    selector:
-        matchLabels:
-            app: authentik-server
-    template:
-        metadata:
-            labels:
-                app: authentik-server
-        spec:
-            initContainers:
-                - name: wait-for-postgres
-                  image: busybox:1.38
-                  command:
-                      [
-                          "sh",
-                          "-c",
-                          "until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done",
-                      ]
-                - name: wait-for-redis
-                  image: busybox:1.38
-                  command:
-                      [
-                          "sh",
-                          "-c",
-                          "until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done",
-                      ]
-            containers:
-                - name: authentik
-                  image: ghcr.io/goauthentik/server:2026.5.3
-                  args:
-                      - server
-                  ports:
-                      - containerPort: 9000
-                      - containerPort: 9443
-                  env:
-                      - name: TZ
-                        value: America/Sao_Paulo
-                      - name: AUTHENTIK_REDIS__HOST
-                        value: redis-shared.core.svc.cluster.local
-                      - name: AUTHENTIK_REDIS__PASSWORD
-                        valueFrom:
-                            secretKeyRef:
-                                name: redis-secret
-                                key: password
-                      - name: AUTHENTIK_POSTGRESQL__HOST
-                        value: postgres-shared.core.svc.cluster.local
-                      - name: AUTHENTIK_POSTGRESQL__USER
-                        value: postgres
-                      - name: AUTHENTIK_ERROR_REPORTING__ENABLED
-                        value: "false"
-                      - name: AUTHENTIK_POSTGRESQL__NAME
-                        value: authentik
-                      - name: AUTHENTIK_POSTGRESQL__PASSWORD
-                        valueFrom:
-                            secretKeyRef:
-                                name: postgres-secret
-                                key: password
-                      - name: AUTHENTIK_SECRET_KEY
-                        valueFrom:
-                            secretKeyRef:
-                                name: authentik-secret
-                                key: secret-key
-                      - name: AUTHENTIK_WEB__LISTEN__HTTP
-                        value: "0.0.0.0:9000"
-                      - name: AUTHENTIK_WEB__LISTEN__HTTPS
-                        value: "0.0.0.0:9443"
-                  resources:
-                      requests:
-                          cpu: 100m
-                          memory: 512Mi
-                      limits:
-                          cpu: 1000m
-                          memory: 1500Mi
-                  livenessProbe:
-                      httpGet:
-                          path: /-/health/live/
-                          port: 9000
-                      initialDelaySeconds: 60
-                      periodSeconds: 20
-                      failureThreshold: 5
-                      timeoutSeconds: 5
-                  readinessProbe:
-                      httpGet:
-                          path: /-/health/live/
-                          port: 9000
-                      initialDelaySeconds: 30
-                      periodSeconds: 10
-                      failureThreshold: 3
-                      timeoutSeconds: 3
-                  volumeMounts:
-                      - name: data
-                        mountPath: /data
-                      - name: certs
-                        mountPath: /certs
-                      - name: templates
-                        mountPath: /templates
-            volumes:
-                - name: data
-                  hostPath:
-                      path: /mnt/seagate-2tb/authentik/data
-                      type: DirectoryOrCreate
-                - name: certs
-                  hostPath:
-                      path: /mnt/seagate-2tb/authentik/certs
-                      type: DirectoryOrCreate
-                - name: templates
-                  hostPath:
-                      path: /mnt/seagate-2tb/authentik/templates
-                      type: DirectoryOrCreate
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: authentik-server
+  template:
+    metadata:
+      labels:
+        app: authentik-server
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.38
+          command:
+            - sh
+            - -c
+            - until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done
+        - name: wait-for-redis
+          image: busybox:1.38
+          command:
+            - sh
+            - -c
+            - until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done
+      containers:
+        - name: authentik
+          image: ghcr.io/goauthentik/server:2026.5.3
+          args:
+            - server
+          ports:
+            - containerPort: 9000
+            - containerPort: 9443
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: AUTHENTIK_REDIS__HOST
+              value: redis-shared.core.svc.cluster.local
+            - name: AUTHENTIK_REDIS__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: postgres-shared.core.svc.cluster.local
+            - name: AUTHENTIK_POSTGRESQL__USER
+              value: postgres
+            - name: AUTHENTIK_ERROR_REPORTING__ENABLED
+              value: "false"
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: authentik
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: AUTHENTIK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-secret
+                  key: secret-key
+            - name: AUTHENTIK_WEB__LISTEN__HTTP
+              value: 0.0.0.0:9000
+            - name: AUTHENTIK_WEB__LISTEN__HTTPS
+              value: 0.0.0.0:9443
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1500Mi
+          livenessProbe:
+            httpGet:
+              path: /-/health/live/
+              port: 9000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /-/health/live/
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: certs
+              mountPath: /certs
+            - name: templates
+              mountPath: /templates
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/seagate-2tb/authentik/data
+            type: DirectoryOrCreate
+        - name: certs
+          hostPath:
+            path: /mnt/seagate-2tb/authentik/certs
+            type: DirectoryOrCreate
+        - name: templates
+          hostPath:
+            path: /mnt/seagate-2tb/authentik/templates
+            type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: authentik-worker
-    namespace: security
+  name: authentik-worker
+  namespace: security
 spec:
-    replicas: 1
-    revisionHistoryLimit: 1
-    selector:
-        matchLabels:
-            app: authentik-worker
-    template:
-        metadata:
-            labels:
-                app: authentik-worker
-        spec:
-            initContainers:
-                - name: wait-for-postgres
-                  image: busybox:1.38
-                  command:
-                      [
-                          "sh",
-                          "-c",
-                          "until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done",
-                      ]
-                - name: wait-for-redis
-                  image: busybox:1.38
-                  command:
-                      [
-                          "sh",
-                          "-c",
-                          "until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done",
-                      ]
-            containers:
-                - name: authentik
-                  image: ghcr.io/goauthentik/server:2026.5.3
-                  args:
-                      - worker
-                  env:
-                      - name: TZ
-                        value: America/Sao_Paulo
-                      - name: AUTHENTIK_REDIS__HOST
-                        value: redis-shared.core.svc.cluster.local
-                      - name: AUTHENTIK_REDIS__PASSWORD
-                        valueFrom:
-                            secretKeyRef:
-                                name: redis-secret
-                                key: password
-                      - name: AUTHENTIK_POSTGRESQL__HOST
-                        value: postgres-shared.core.svc.cluster.local
-                      - name: AUTHENTIK_POSTGRESQL__USER
-                        value: postgres
-                      - name: AUTHENTIK_POSTGRESQL__NAME
-                        value: authentik
-                      - name: AUTHENTIK_POSTGRESQL__PASSWORD
-                        valueFrom:
-                            secretKeyRef:
-                                name: postgres-secret
-                                key: password
-                      - name: AUTHENTIK_SECRET_KEY
-                        valueFrom:
-                            secretKeyRef:
-                                name: authentik-secret
-                                key: secret-key
-                  resources:
-                      requests:
-                          cpu: 100m
-                          memory: 256Mi
-                      limits:
-                          cpu: 500m
-                          memory: 768Mi
-                  volumeMounts:
-                      - name: data
-                        mountPath: /data
-                      - name: certs
-                        mountPath: /certs
-                      - name: templates
-                        mountPath: /templates
-            volumes:
-                - name: data
-                  hostPath:
-                      path: /mnt/seagate-2tb/authentik/data
-                      type: DirectoryOrCreate
-                - name: certs
-                  hostPath:
-                      path: /mnt/seagate-2tb/authentik/certs
-                      type: DirectoryOrCreate
-                - name: templates
-                  hostPath:
-                      path: /mnt/seagate-2tb/authentik/templates
-                      type: DirectoryOrCreate
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: authentik-worker
+  template:
+    metadata:
+      labels:
+        app: authentik-worker
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.38
+          command:
+            - sh
+            - -c
+            - until nc -z postgres-shared.core.svc.cluster.local 5432; do echo 'Aguardando postgres-shared...'; sleep 5; done
+        - name: wait-for-redis
+          image: busybox:1.38
+          command:
+            - sh
+            - -c
+            - until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done
+      containers:
+        - name: authentik
+          image: ghcr.io/goauthentik/server:2026.5.3
+          args:
+            - worker
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: AUTHENTIK_REDIS__HOST
+              value: redis-shared.core.svc.cluster.local
+            - name: AUTHENTIK_REDIS__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: postgres-shared.core.svc.cluster.local
+            - name: AUTHENTIK_POSTGRESQL__USER
+              value: postgres
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: authentik
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: AUTHENTIK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-secret
+                  key: secret-key
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: certs
+              mountPath: /certs
+            - name: templates
+              mountPath: /templates
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/seagate-2tb/authentik/data
+            type: DirectoryOrCreate
+        - name: certs
+          hostPath:
+            path: /mnt/seagate-2tb/authentik/certs
+            type: DirectoryOrCreate
+        - name: templates
+          hostPath:
+            path: /mnt/seagate-2tb/authentik/templates
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: authentik
-    namespace: security
+  name: authentik
+  namespace: security
 spec:
-    selector:
-        app: authentik-server
-    ports:
-        - name: http
-          port: 9000
-          targetPort: 9000
-        - name: https
-          port: 9443
-          targetPort: 9443
+  selector:
+    app: authentik-server
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
+    - name: https
+      port: 9443
+      targetPort: 9443
