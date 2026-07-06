@@ -8,6 +8,8 @@ kind: Application
 metadata:
   name: argocd
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   source:
@@ -23,9 +25,9 @@ spec:
           params:
             server.insecure: true
           cm:
-            # ignora diff de qualquer campo .status em qualquer recurso - evita
-            # ComparisonError tipo "ipMode"/"terminatingReplicas": field not declared in schema
-            # quando o schema do argocd fica atras da versao do k8s do cluster.
+            # Ignora diferenças em campos .status dos recursos Kubernetes.
+            # Evita erros como:
+            # ".status.terminatingReplicas: field not declared in schema"
             resource.compareoptions: |
               ignoreResourceStatusField: all
   destination:
@@ -35,3 +37,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
