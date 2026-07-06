@@ -44,7 +44,7 @@ spec:
     spec:
       containers:
         - name: consul
-          image: hashicorp/consul:1.21.2
+          image: hashicorp/consul:1.22.7
           ports:
             - containerPort: 8500
               name: http
