@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-shared-backup
+  namespace: core
+  labels:
+    argocd.argoproj.io/instance: postgres-shared
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 1800
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: postgres:14-alpine
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: password
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  timestamp=$(date +%Y%m%d-%H%M%S)
+                  outfile="/backups/pgdump_${timestamp}.sql.gz"
+                  echo "Iniciando pg_dumpall em ${outfile}"
+                  pg_dumpall -h postgres-shared.core.svc.cluster.local -U postgres | gzip -9 > "${outfile}"
+                  echo "Dump concluido: $(ls -lh "${outfile}")"
+                  echo "Removendo dumps com mais de 14 dias"
+                  find /backups -name "pgdump_*.sql.gz" -mtime +14 -delete
+                  echo "Backups atuais:"
+                  ls -lh /backups
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+              volumeMounts:
+                - name: backups
+                  mountPath: /backups
+          volumes:
+            - name: backups
+              hostPath:
+                path: /mnt/backup-500gb/pgdumps
+                type: Directory
