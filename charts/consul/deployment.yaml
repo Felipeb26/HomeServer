@@ -1,31 +1,16 @@
-apiVersion: v1
-kind: Secret
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
 metadata:
   name: consul-secret
   namespace: development
-type: Opaque
-stringData:
-  CONSUL_LOCAL_CONFIG: |
-    {
-      "datacenter": "dc1",
-      "data_dir": "/consul/data",
-      "log_level": "INFO",
-      "node_name": "server-prod",
-      "server": true,
-      "bootstrap_expect": 1,
-      "ui_config": { "enabled": true },
-      "client_addr": "0.0.0.0",
-      "performance": { "raft_multiplier": 3 },
-      "acl": {
-        "enabled": true,
-        "default_policy": "deny",
-        "enable_token_persistence": true,
-        "tokens": {
-          "initial_management": "2f85162c-2d84-b4ea-4332-386d6e50c2fb",
-          "agent": "2f85162c-2d84-b4ea-4332-386d6e50c2fb"
-        }
-      }
-    }
+spec:
+  encryptedData:
+    CONSUL_LOCAL_CONFIG: AgB9f3zyj/eAJWdKjSYohfe3d5MHPDliPxDmYd4yOm31Y5NJxmo2Fis4qGKWetOUTXD+2jZFcW7FHg4ZGEtXpHGJq4KSuB8iNvQtmP9mbviclxWTE7RrL2kB2r+zf3JZQZZqiDJYSnQ+RQslYlyZoT9WASmLSpbTo+gK6XRs18i3wt1lNbFHEgR/aRW6g0cwjooTqPkKnYKbN23mBF9lnTc5rWTQbAOarCL/DYFMQ8PZtmtbMjXbrqARHnnXzzRgoYLuzxpiHMEv2Uc8fo3cyMBOZYlhEspGuvR7kqbbGg7YV8jDzxEj/kyLLVT7+Jqik4aAWQLdCkTbYZX+zFoKz/Lux2M3Cj/n0/n+Ip1OLBRAwc/luvAT41Bu/h7rFeXjolE6jaDVXhnieXbsE8uEzP2o10EixkYhJpamQB9be0mEP7nB449GUgFH0lpqSbkNusH0PPMniK8aNCievAdWfuh4cTx2p5OTG5QUMtyzCgGihfGf/UHFhAqwSbBpEMUzUygNDB7WbIb6bqh6OC0j6/nue60zn8h8VTZud7qvuIR6VxamW9qytZ267PCCn+Qyp4aMv+3mW8aCCNjx3X27O9R1iZpxxyYFGm07y1m293+cnelTT/Gs7Cv9YPR5hZZQGLWu467sOF49gdV63DmAtuRNCgtwBuF8e/cXyPCZpSYnsAaD4E3cjLFeDnOAOGuSSYBh32E05W0bmmjyabfYv/y8qMOO81vJz+SjkKqAPfktPpuxWqUSAJnz+P4vgUlhhtRRr+bAdV9TDnPEjjXgoMw+3bGXWQo7FO9eT9Cy7VkrWvrrV/aPaaPst+csh1o2c0YtuBCqlERbr1JmiQ7pvPZIrag4k63cGXbuq75Ot7VZhrr04fRHx5d5Vly7pJHWROluJHmIUXQMSM+VAr1QBOqwu99I891mjCnueBaOTt8aA3J1DcK/0qlPvVGrsRn0DcHNVxZkEAXmt+iYI7w9L2k0Ao9nSv0eVTNJ12BXQtqV43mfx7cDaKeNyFzWE0i1/FryveA4H+Mp2F2o7FY00z+HV3QKPkDw1huLFHplNeF7JTw0SqAFLvNTxLzwajFX6hQDlT4wIpnoQMXot4QZIOJ9F7M/L3Pa+5cJl2fWsJrQuR35U38Y3AnBPXxxv7pOXA+QktFB3F3ATIkvzOXc5r75Hdyu3kZ/Wlvwb3MNzU9GuglRikT2i7S7uNJNFcb4F+k0b2wX9wNKipQ8WvqEJH9lXpoIjn+FTbPz+puddoXkN2+eH972kRr3BjMuudxFfUhhnMiUAd5VwKbBlEb2NMN+K/bK2/PCHBf+GKsDJF101YoUEluBADMhDrGYjeFZijIkwSt65L5rsQU2w+wBuVejMcRE9220KO8OHxhY
+  template:
+    metadata:
+      name: consul-secret
+      namespace: development
+    type: Opaque
 ---
 apiVersion: apps/v1
 kind: Deployment

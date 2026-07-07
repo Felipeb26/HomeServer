@@ -1,11 +1,16 @@
-apiVersion: v1
-kind: Secret
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
 metadata:
   name: filebrowser-secret
   namespace: media
-type: Opaque
-stringData:
-  admin-password: CHANGEME
+spec:
+  encryptedData:
+    admin-password: AgBCh44W8368NMfm+p7Rr5/LEjxMe1eyltcOPx08xsLBu3WCbLCHTIzGN8YyKX8sgjCDnoVo2R8qK1NCPa4TBPu4A4S3hKt+8yye9jiEUdx5CEKcIW/YggF7+bqPIqQ8WZll9uIAwOldH02LoQw4eFeENoGIrq/7/iavyyCW3lKFff1UrI35fmrpy/pBq+UHN5K7Ot6d8qRkgAzyCt9F+qySJmJJso8jlXTowJyHKsTFV4MJ9cCt+H4pJZykdb9yLncB9pwiLwk0iFPMpBPuxtjhkk2NCCOzhHt7iEw6zT9M3druzpDdskbrRMEN4g5FZwLPNMaKX6jwVJxfXZGcb/UNaACnodZrDWQUbOTPrX0PBsjHu8qRTNAWiXfEUKawHFNrw6mghlmsJY7UrcscG41/tuVL9M7ZSnOdhV5zjblCD8lE5L/DgMBVafCVYZx1LDmCqGnAEmqdNEz4lNJMxPw06K+7lviFaG488y93QYkJ1IoI0ZYOGdTqtJDD/GZWQ+w8lvpDyy9hgm1FT5wj90o19By9E2kPJrKSzQXtRXc7vB0V4fRzYBfu8gbm6GCVpAs7eUp0l2C+hBdg7fWbuhCIjGiMckIZUeUzhirJ1vU4TU89kHyRDer9jvJncDXaGMVcWAWSE7OdLYQJsqoMWcsPklPfUQs0/qfX7R8E9ZUA2mhmG/6NT0BsEcRxdwPs2g85VcC9stmljtfTXE9JPz6R9vK/AHaw1Is=
+  template:
+    metadata:
+      name: filebrowser-secret
+      namespace: media
+    type: Opaque
 ---
 apiVersion: apps/v1
 kind: Deployment
