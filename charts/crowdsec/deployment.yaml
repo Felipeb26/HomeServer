@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: crowdsec-acquis
+  namespace: security
+data:
+  acquis.yaml: |
+    source: k8s-files
+    filename: /var/log/containers/*ingress-nginx*.log
+    labels:
+      type: k8s-nginx-ingress
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: crowdsec-data-pvc
+  namespace: security
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crowdsec
+  namespace: security
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crowdsec
+  template:
+    metadata:
+      labels:
+        app: crowdsec
+    spec:
+      containers:
+        - name: crowdsec
+          image: crowdsecurity/crowdsec:v1.6.5
+          env:
+            - name: COLLECTIONS
+              value: "crowdsecurity/nginx crowdsecurity/linux"
+            - name: DISABLE_ONLINE_API
+              value: "false"
+          ports:
+            - containerPort: 8080
+              name: lapi
+          volumeMounts:
+            - name: acquis
+              mountPath: /etc/crowdsec/acquis.yaml
+              subPath: acquis.yaml
+            - name: nginx-logs
+              mountPath: /var/log/containers
+              readOnly: true
+            - name: pod-logs
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: data
+              mountPath: /var/lib/crowdsec/data
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 300m, memory: 512Mi }
+      volumes:
+        - name: acquis
+          configMap:
+            name: crowdsec-acquis
+        - name: nginx-logs
+          hostPath:
+            path: /var/log/containers
+        - name: pod-logs
+          hostPath:
+            path: /var/log/pods
+        - name: data
+          persistentVolumeClaim:
+            claimName: crowdsec-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crowdsec-lapi
+  namespace: security
+spec:
+  selector:
+    app: crowdsec
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cs-firewall-bouncer
+  namespace: security
+spec:
+  selector:
+    matchLabels:
+      app: cs-firewall-bouncer
+  template:
+    metadata:
+      labels:
+        app: cs-firewall-bouncer
+    spec:
+      hostNetwork: true
+      containers:
+        - name: bouncer
+          image: crowdsecurity/cs-firewall-bouncer:v0.0.30
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN", "NET_RAW"]
+          env:
+            - name: LAPI_URL
+              value: "http://crowdsec-lapi.security.svc.cluster.local:8080"
+            - name: BOUNCER_KEY_filename
+              value: "/etc/bouncer/bouncer-key"
+          volumeMounts:
+            - name: bouncer-key
+              mountPath: /etc/bouncer
+              readOnly: true
+      volumes:
+        - name: bouncer-key
+          secret:
+            secretName: crowdsec-bouncer-key
