@@ -106,7 +106,7 @@ spec:
       hostNetwork: true
       containers:
         - name: bouncer
-          image: crowdsecurity/cs-firewall-bouncer:v0.0.30
+          image: crowdsecurity/cs-firewall-bouncer:v0.0.34
           securityContext:
             privileged: true
             capabilities:
