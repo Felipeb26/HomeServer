@@ -19,7 +19,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: backup
-              image: postgres:14-alpine
+              image: postgres:18-alpine
               env:
                 - name: PGPASSWORD
                   valueFrom:
