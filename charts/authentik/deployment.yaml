@@ -29,7 +29,7 @@ spec:
             - until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:2026.5.3
+          image: ghcr.io/goauthentik/server:2026.5.4
           args:
             - server
           ports:
@@ -142,7 +142,7 @@ spec:
             - until nc -z redis-shared.core.svc.cluster.local 6379; do echo 'Aguardando redis-shared...'; sleep 5; done
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:2026.5.3
+          image: ghcr.io/goauthentik/server:2026.5.4
           args:
             - worker
           env:
