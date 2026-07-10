@@ -5,7 +5,7 @@ metadata:
   namespace: security
 data:
   acquis.yaml: |
-    source: files
+    source: file
     filename: /var/log/containers/*ingress-nginx*.log
     labels:
       type: k8s-nginx-ingress
