@@ -39,7 +39,7 @@ spec:
     spec:
       containers:
         - name: crowdsec
-          image: crowdsecurity/crowdsec:v1.6.5
+          image: crowdsecurity/crowdsec:v1.7.8
           env:
             - name: COLLECTIONS
               value: "crowdsecurity/nginx crowdsecurity/linux"
