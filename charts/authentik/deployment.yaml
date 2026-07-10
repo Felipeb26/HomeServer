@@ -4,7 +4,7 @@ metadata:
   name: authentik-server
   namespace: security
 spec:
-  replicas: 0
+  replicas: 1
   revisionHistoryLimit: 1
   selector:
     matchLabels:
@@ -117,7 +117,7 @@ metadata:
   name: authentik-worker
   namespace: security
 spec:
-  replicas: 0
+  replicas: 1
   revisionHistoryLimit: 1
   selector:
     matchLabels:
