@@ -38,3 +38,22 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-cleanup
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Felipeb26/HomeServer.git
+    targetRevision: HEAD
+    path: charts/cluster-cleanup
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cluster-tools
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
