@@ -83,6 +83,7 @@ metadata:
   name: crowdsec-lapi
   namespace: security
 spec:
+  type: NodePort
   selector:
     app: crowdsec
   ports:
