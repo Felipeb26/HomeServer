@@ -35,3 +35,23 @@ spec:
     automated:
       prune: true
       selfHeal: true
+---
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: consul
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Felipeb26/HomeServer.git
+    targetRevision: HEAD
+    path: charts/consul
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: development
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
