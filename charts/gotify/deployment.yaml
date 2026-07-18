@@ -48,7 +48,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: gotify
-          image: gotify/server:2.9.1
+          image: gotify/server:3.0.0
           ports:
             - name: http
               containerPort: 80
