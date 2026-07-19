@@ -57,3 +57,41 @@ spec:
     automated:
       prune: true
       selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: radar
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Felipeb26/HomeServer.git
+    targetRevision: HEAD
+    path: charts/services/radar
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cluster-tools
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cockpit
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Felipeb26/HomeServer.git
+    targetRevision: HEAD
+    path: charts/services/cockpit
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cluster-tools
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
