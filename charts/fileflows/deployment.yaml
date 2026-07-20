@@ -40,6 +40,8 @@ spec:
               value: compute,utility
             - name: MACHINE_LEARNING_DEVICE
               value: cuda
+            - name: FF_NO_ENCRYPT
+              value: "1"
           resources:
             requests:
               cpu: 500m
