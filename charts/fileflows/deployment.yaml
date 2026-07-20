@@ -47,8 +47,8 @@ spec:
               cpu: 500m
               memory: 1Gi
             limits:
-              cpu: 5000m
-              memory: 18Gi
+              cpu: 5500m
+              memory: 10Gi
               nvidia.com/gpu: 1
           livenessProbe:
             tcpSocket:
