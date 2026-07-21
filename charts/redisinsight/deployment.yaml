@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: redisinsight
-          image: redis/redisinsight:3.6
+          image: redis/redisinsight:3.8
           ports:
             - containerPort: 5540
           env:
