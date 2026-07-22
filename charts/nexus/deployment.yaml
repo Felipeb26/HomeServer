@@ -32,7 +32,7 @@ metadata:
   name: nexus
   namespace: development
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: nexus
@@ -68,10 +68,10 @@ spec:
           resources:
             requests:
               cpu: 250m
-              memory: 1500Mi
+              memory: 500Mi
             limits:
-              cpu: 1500m
-              memory: 3Gi
+              cpu: 1
+              memory: 2Gi
           startupProbe:
             httpGet:
               path: /service/rest/v1/status
