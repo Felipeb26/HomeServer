@@ -45,10 +45,10 @@ spec:
           resources:
             requests:
               cpu: 500m
-              memory: 1Gi
+              memory: 256Mi
             limits:
-              cpu: 5500m
-              memory: 10Gi
+              cpu: 6
+              memory: 8Gi
               nvidia.com/gpu: 1
           livenessProbe:
             tcpSocket:
